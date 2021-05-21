@@ -1,0 +1,70 @@
+= 2.0.0 - April 6, 2021 = 
+* Update: moved over to JSON implementation of Fincon API
+
+= 1.3.1 - January 13, 2021 =
+* Update: Exception handling on Stock Images
+* Update: Change to User Syncing tracking
+* Update: Change to Connection Keep Alive
+* Fix: User Syncing error based on testing connection is still active
+* Feature: Better logging for checking stock
+
+= 1.3.0 - October 10, 2020 =
+* Feature: Sync Product Images
+* Feature: Batch Processing
+* Feature: Different Stock Location for orders
+* Feature: Multiple Stock Locations for products
+* Feature: PHP Error logging
+* Feature: Login Retry
+* Feature: Login Session Handling
+* Update: Error exception handling on connection update
+* Update: Checkout field Address 2 removed
+* Update: Checkout field Address 1 and City limited to 40 characters
+* Update: Woocommerce decimal setting integration
+
+= 1.2.1 - July 2, 2020 =
+* Update: Category mapping system changes
+
+= 1.2.0 - June 11, 2020 =
+* Feature: Status Page
+* Feature: Log System
+* Feature: Streamlined Emailing Options and added additional emails
+
+= 1.1.5 - June 2, 2020 =
+* Fix: Shipping calculation
+
+= 1.1.4 - May 29, 2020 =
+* Fix: Better handling of SOAP socket errors for connection
+
+= 1.1.3 - May 26, 2020 =
+* Fix: Github Updater Error Checking
+
+= 1.1.2 - April 6, 2020 =
+* Fix: Activation method and initial imports
+* Update: Validation of main settings
+
+= 1.1.1 - April 3, 2020 =
+* Feature: Checking for Local Pickup as a shipping option - and marking on SO as 'C' or 'R'
+* Feature: Email system for if the connection goes down
+* Update: Rework of Status Check Scheduling
+* Update: Settings validation
+
+= 1.1.0 - April 2, 2020 =
+* Initial Production Release
+* Feature: Sync products from Fincon to Woocommerce
+* Feature: Update stock levels and pricing automatically from Fincon
+* Feature: Adding a product to your cart on Woocommerce performs a live stock check to your Fincon
+* Feature: Sync your Debtors from Fincon to Woocommerce
+* Feature: Assign Guest orders to Specific Fincon Debtor Account
+* Feature: Create Woocommerce orders as Sales Orders in Fincon
+
+= 1.0.3 - April 2, 2020 =
+* Developmental Pre-Release
+
+= 1.0.2 - April 2, 2020 =
+* Developmental Pre-Release
+
+= 1.0.1 - April 2, 2020 =
+* Developmental Pre-Release
+
+= 1.0.0 - April 2, 2020 =
+* Developmental Pre-Release
