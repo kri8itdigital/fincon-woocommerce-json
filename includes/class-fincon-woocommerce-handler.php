@@ -138,7 +138,7 @@ class WC_Fincon{
 			curl_setopt($_CALL, CURLOPT_POST, 1);
 
 			if($_DO_ENCODE):
-				curl_setopt($_CALL, CURLOPT_POSTFIELDS, json_encode($_POSTING));
+				curl_setopt($_CALL, CURLOPT_POSTFIELDS, json_encode($_POSTING, JSON_NUMERIC_CHECK));
 			else:
 				curl_setopt($_CALL, CURLOPT_POSTFIELDS, $_POSTING);
 			endif;
@@ -1165,7 +1165,7 @@ class WC_Fincon{
 			$_SALES_ORDER['AccNo'] 				= $_ACC_TO_USE;
 			$_SALES_ORDER['LocNo'] 				= $this->_O_LOC;
 			$_SALES_ORDER['TotalExcl']			= number_format($_ORDER->get_total() - $_ORDER->get_total_tax(), $this->_DECIMAL, ".", "");
-			$_SALES_ORDER['TotalIncl']			= number_format($_ORDER->get_total(), $this->_DECIMAL, ".", "");
+			$_SALES_ORDER['TotalTax']			= number_format($_ORDER->get_total_tax(), $this->_DECIMAL, ".", "");
 			$_SALES_ORDER['CustomerRef'] 		= $_ORDER_ID;
 
 
@@ -1231,7 +1231,7 @@ class WC_Fincon{
 					$_DETAIL['Quantity'] 		= $_ITEM->get_quantity();
 					$_DETAIL['LineTotalExcl'] 	= number_format($_ITEM->get_subtotal(), $_DECIMAL, ".", "");
 					$_DETAIL['TaxCode']			= $_STOCKITEM['TaxCode'];
-					$_DETAIL['LineTotalIncl'] 	= number_format($_ITEM->get_subtotal() + $_ITEM->get_subtotal_tax(), $_DECIMAL, ".", "");
+					$_DETAIL['LineTotalTax'] 	= number_format($_ITEM->get_subtotal_tax(), $_DECIMAL, ".", "");
 					$_DETAIL['Description'] 	= $_STOCKITEM['Description'];
 
 					$_SALES_ORDER_DETAIL[] 		= $_DETAIL;
@@ -1259,9 +1259,9 @@ class WC_Fincon{
 
 						$_DETAIL['ItemNo']  		= $this->_SHIP;
 						$_DETAIL['Quantity'] 		= 1;
-						$_DETAIL['LineTotalExcl'] 	= number_format($_ORDER->get_shipping_total(), $_DECIMAL, ".", "");
+						$_DETAIL['LineTotalExcl'] 	= number_format($_ORDER->get_shipping_total() - $_ORDER->get_shipping_tax(), $_DECIMAL, ".", "");
 						$_DETAIL['TaxCode'] 		= $_SHIPPING_ITEM['TaxCode'];
-						$_DETAIL['LineTotalIncl'] 	= number_format($_ORDER->get_shipping_total() + $_ORDER->get_shipping_tax(), $_DECIMAL, ".", "");
+						$_DETAIL['LineTotalTax'] 	= number_format($_ORDER->get_shipping_tax(), $_DECIMAL, ".", "");
 						$_DETAIL['Description'] 	= $_SHIPPING_ITEM['Description'].'-'.$_ORDER->get_shipping_method();
 
 						$_SALES_ORDER_DETAIL[] 		= $_DETAIL;
@@ -1284,8 +1284,8 @@ class WC_Fincon{
 
 					if($_COUPON_ITEM && $_COUPON_ITEM['ItemNo'] != ''):
 
-						$_AMT_E = number_format($_ITEM['discount_amount'], $_DECIMAL, ".", "");
-						$_AMT_I = number_format($_ITEM['discount_amount'] + $_ITEM['discount_tax'], $_DECIMAL, ".", "");
+						$_AMT_E = number_format($_ITEM['discount_amount'] - $_ITEM['discount_tax'], $_DECIMAL, ".", "");
+						$_AMT_T = number_format($_ITEM['discount_tax'], $_DECIMAL, ".", "");
 
 						$_DETAIL = array();
 
@@ -1293,7 +1293,7 @@ class WC_Fincon{
 						$_DETAIL['Quantity'] 		= 1;
 						$_DETAIL['LineTotalExcl'] 	= number_format($_AMT_E, $_DECIMAL, ".", "");
 						$_DETAIL['TaxCode'] 		= $_SHIPPING_ITEM['TaxCode'];
-						$_DETAIL['LineTotalIncl'] 	= number_format($_AMT_I, $_DECIMAL, ".", "");
+						$_DETAIL['LineTotalTax'] 	= number_format($_AMT_T, $_DECIMAL, ".", "");
 						$_DETAIL['Description'] 	= $_SHIPPING_ITEM['Description'].'-'.$_ITEM->get_name();
 
 						$_SALES_ORDER_DETAIL[] 		= $_DETAIL;
