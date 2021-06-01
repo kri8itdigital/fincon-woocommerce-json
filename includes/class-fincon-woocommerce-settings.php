@@ -171,7 +171,19 @@ class fincon_woocommerce_settings extends WC_Settings_Page {
 						'id'            => 'fincon_woocommerce_order_location',
 						'default'       => '00',
 						'type'          => 'text'
-					),				
+					),	
+					array (
+							'title' 	=> __('Fincon Order Status', 'fincon-woocommerce'),
+							'desc' 		=> __('Should sales orders be created as Approved', 'fincon-woocommerce' ),
+							'type' 		=> 'select',
+							'default' 	=> '',
+							'id' 		=> 'fincon_woocommerce_order_status',
+							'default' 	=> 'yes',
+							'options'   => array(
+								'yes'	=> __( 'Yes - Approved', 'fincon-woocommerce' ),
+								'nope'	=> __( 'No - Not Approved', 'fincon-woocommerce' )
+							)
+					),			
 					array(
 						'type' => 'sectionend',
 						'id'   => 'fincon_woocommerce_settings',

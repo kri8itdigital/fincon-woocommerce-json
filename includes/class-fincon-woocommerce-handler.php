@@ -35,6 +35,8 @@ class WC_Fincon{
 
 	var $_PROD_STATUS = '';
 
+	var $_ORDER_STATUS = false;
+
 	var $_ERR 		= '';
 	var $_ERRORS 	= array();
 
@@ -96,6 +98,10 @@ class WC_Fincon{
 		if(get_option('fincon_woocommerce_sync_product_group') == 'yes'):
 			$this->_PROD_GROUP = true;
 		endif;	
+
+		if(get_option('fincon_woocommerce_order_status') == 'yes'):
+			$this->_ORDER_STATUS = true;
+		endif;
 	}
 
 
@@ -1325,7 +1331,7 @@ class WC_Fincon{
 
 					/* LETS GO DUDES! */
 					$_POSTING = array();
-
+					$_POSTING['_parameters'][] = (int)$this->_ORDER_STATUS;
 					$_POSTING['_parameters'][] = $_SALES_ORDER;
 
 					update_post_meta($_ORDER_ID, 'fincon_sales_order_data', $_SALES_ORDER);
@@ -1335,6 +1341,19 @@ class WC_Fincon{
 					if($_SO_NUMBER):
 						update_post_meta($_ORDER_ID, '_fincon_sales_order', $_SO_NUMBER);
 						WC_Fincon_Logger::log('SALES ORDER CREATED::'.$_SO_NUMBER.' ('.$_ORDER_ID.')');
+					else:
+
+						if(count($this->_ERRORS) > 0):
+							update_post_meta($_ORDER_ID, '_fincon_sales_error', $this->_ERRORS);
+
+							foreach($this->_ERRORS as $_ERROR):
+
+								WC_Fincon_Logger::log('SALES ORDER ERROR ('.$_ORDER_ID.')::'.$_ERROR);
+
+							endforeach;
+
+						endif;
+
 					endif;
 
 				endif;
