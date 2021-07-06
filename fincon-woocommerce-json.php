@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'FINCON_WOOCOMMERCE_VERSION', '2.0.4' );
+define( 'FINCON_WOOCOMMERCE_VERSION', '2.0.5' );
 define( 'FINCON_WOOCOMMERCE_CRON_BASE', str_replace("fincon-woocommerce.php", "cron.php", trailingslashit(get_site_url()).'wp-content/plugins/'.plugin_basename(__FILE__)));
 
 /**
@@ -85,7 +85,7 @@ function fincon_woocommerce_check_for_update(){
 	        'requires'           => '5.0',
 	        'tested'             => '5.7',
 	        'readme'             => 'README.md',
-	        'version'			 => '2.0.4'
+	        'version'			 => '2.0.5'
 	    );
 
 	    new fincon_updater( $config );

@@ -145,6 +145,13 @@ class fincon_woocommerce_settings extends WC_Settings_Page {
 						'type'          => 'checkbox'
 					),
 					array(
+						'desc'          => __( 'Assign Payments to Sales Orders', 'fincon-woocommerce' ),
+						'id'            => 'fincon_woocommerce_sync_orders_payments',
+						'default'       => 'no',
+						'checkboxgroup' => '',
+						'type'          => 'checkbox'
+					),
+					array(
 						'desc'          => __( 'Use Guest Details as Debtor Details on Guest orders', 'fincon-woocommerce' ),
 						'id'            => 'fincon_woocommerce_pass_guest_user_info',
 						'default'       => 'no',

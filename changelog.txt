@@ -1,3 +1,6 @@
+= 2.0.5 - June 15, 2021 = 
+* Feature: Assign Payments to Sales Orders
+
 = 2.0.4 - June 1, 2021 = 
 * Fix: Approved Flag on Sales Order
 

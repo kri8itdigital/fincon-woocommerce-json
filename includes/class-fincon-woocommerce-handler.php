@@ -40,6 +40,8 @@ class WC_Fincon{
 	var $_ERR 		= '';
 	var $_ERRORS 	= array();
 
+	var $_PAYMENTS  = false;
+
 
 
 
@@ -101,6 +103,10 @@ class WC_Fincon{
 
 		if(get_option('fincon_woocommerce_order_status') == 'yes'):
 			$this->_ORDER_STATUS = true;
+		endif;
+
+		if(get_option('fincon_woocommerce_sync_orders_payments') == 'yes'):
+			$this->_PAYMENTS = true;
 		endif;
 	}
 
@@ -1021,7 +1027,7 @@ class WC_Fincon{
 
 
 			if($_RESPONSE['ErrorInfo'] == ""):
-				return $_RESPONSE['SalesOrderInfo']['OrderNo'];
+				return $_RESPONSE;
 			elseif($_RESPONSE['ErrorInfo'] != ""):
 				$this->_ERRORS[] = $_RESPONSE['ErrorInfo']; 
 			else:
@@ -1318,6 +1324,33 @@ class WC_Fincon{
 				$_SALES_ORDER['SalesOrderDetail'] = $_SALES_ORDER_DETAIL;
 
 
+				if($this->_PAYMENTS):
+					/* ASSIGN PAYMENT */
+					$_PAYMENT_TYPE 		= $_ORDER->get_payment_method();
+					$_PAYMENT_TITLE 	= $_ORDER->get_payment_method_title();
+					$_SALES_ORDER_PAYMENT = array();
+					
+					switch($_PAYMENT_TYPE):
+
+						case "bacs":
+						case "cheque":
+							$_SALES_ORDER_PAYMENT['PayType'] = 'T';
+						break;
+
+						default:
+							$_SALES_ORDER_PAYMENT['PayType'] = 'C';
+						break;
+
+					endswitch;				
+					
+
+					$_SALES_ORDER_PAYMENT['CardNo'] = $_PAYMENT_TITLE;
+					$_SALES_ORDER_PAYMENT['Amount'] = number_format($_ORDER->get_total(), $_DECIMAL, ".", "");
+
+					$_SALES_ORDER['SalesOrderPayment'] = $_SALES_ORDER_PAYMENT;
+
+				endif;
+
 				if(count($this->_ERRORS) > 0):
 					update_post_meta($_ORDER_ID, '_fincon_sales_error', $this->_ERRORS);
 
@@ -1336,22 +1369,23 @@ class WC_Fincon{
 
 					update_post_meta($_ORDER_ID, 'fincon_sales_order_data', $_SALES_ORDER);
 
-					$_SO_NUMBER = $this->CreateSalesOrder($_POSTING);
+					$_SO_RESPONSE = $this->CreateSalesOrder($_POSTING);
 
-					if($_SO_NUMBER):
+					if($_SO_RESPONSE['SalesOrderInfo']['OrderNo']):
+
+						$_SO_NUMBER = $_SO_RESPONSE['SalesOrderInfo']['OrderNo'];
+
 						update_post_meta($_ORDER_ID, '_fincon_sales_order', $_SO_NUMBER);
 						WC_Fincon_Logger::log('SALES ORDER CREATED::'.$_SO_NUMBER.' ('.$_ORDER_ID.')');
-					else:
 
-						if(count($this->_ERRORS) > 0):
-							update_post_meta($_ORDER_ID, '_fincon_sales_error', $this->_ERRORS);
+						if($this->_PAYMENTS):
+							if($_SO_RESPONSE['SalesOrderInfo']['SalesOrderPayment']['ReceiptNo']):
 
-							foreach($this->_ERRORS as $_ERROR):
-
-								WC_Fincon_Logger::log('SALES ORDER ERROR ('.$_ORDER_ID.')::'.$_ERROR);
-
-							endforeach;
-
+								$_RP_NUMBER = $_SO_RESPONSE['SalesOrderInfo']['SalesOrderPayment']['ReceiptNo'];
+								update_post_meta($_ORDER_ID, '_fincon_receipt_number', $_RP_NUMBER);
+								WC_Fincon_Logger::log('SALES ORDER RECEIPT::'.$_RP_NUMBER.' ('.$_ORDER_ID.')');
+						
+							endif;
 						endif;
 
 					endif;
