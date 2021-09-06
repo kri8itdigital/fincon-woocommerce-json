@@ -356,8 +356,8 @@ class WC_Fincon{
 		/* PART 1 */
 		$_ENDPOINT = 'Login';
 		$_DATA = array($DATA, $DUN, $DPW, 0);
-
-		$_PING_URL = trailingslashit($URL.$_ENDPOINT);
+		$_PING_URL = trailingslashit($URL);
+		$_PING_URL = trailingslashit($_PING_URL.$_ENDPOINT);
 
 		if(count($_DATA) > 0):
 			$_PING_URL = trailingslashit($_PING_URL.implode("/", $_DATA));
@@ -391,8 +391,8 @@ class WC_Fincon{
 			/*PART 2 */
 			$_ENDPOINT = 'Logout';
 			$_DATA = array($_ID);
-
-			$_PING_URL = trailingslashit($URL.$_ENDPOINT);
+			$_PING_URL = trailingslashit($URL);
+			$_PING_URL = trailingslashit($_PING_URL.$_ENDPOINT);
 
 			if(count($_DATA) > 0):
 				$_PING_URL = trailingslashit($_PING_URL.implode("/", $_DATA));
