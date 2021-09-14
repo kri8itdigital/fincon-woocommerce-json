@@ -22,6 +22,15 @@
  */
 class Fincon_Woocommerce_Public {
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * The ID of this plugin.
 	 *
@@ -40,6 +49,15 @@ class Fincon_Woocommerce_Public {
 	 */
 	private $version;
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -54,6 +72,15 @@ class Fincon_Woocommerce_Public {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
 	 *
@@ -65,6 +92,15 @@ class Fincon_Woocommerce_Public {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Register the JavaScript for the public-facing side of the site.
 	 *
@@ -76,6 +112,15 @@ class Fincon_Woocommerce_Public {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Validate stock live when added to cart
 	 *
@@ -91,12 +136,8 @@ class Fincon_Woocommerce_Public {
 		$_SKU 		= $_PROD->get_sku();
 
 		$_FINCON = new WC_Fincon();
-		//WC_Fincon_Logger::log('--Start Cart Validation--');
-		$_FINCON->Login();
 		$_STOCKQTY = $_FINCON->GetStockQuantity($_SKU);
 		WC_Fincon_Logger::log('Add To Cart Stock Check ('.$_SKU.'): '.$_STOCKQTY);
-		$_FINCON->Logout();
-		//WC_Fincon_Logger::log('--End Cart Validation--');
 
 		if($_PROD->get_backorders() == 'no'):
 
@@ -131,6 +172,15 @@ class Fincon_Woocommerce_Public {
 		return $_VALID;
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Validate stock on checkout
 	 *
@@ -141,10 +191,6 @@ class Fincon_Woocommerce_Public {
 		if( is_cart() || is_checkout() ):
 
 			$_FINCON = new WC_Fincon();
-
-			//WC_Fincon_Logger::log('--Start Checking Cart/Checkout Items--');
-
-			$_FINCON->Login();
 
 			foreach(WC()->cart->get_cart() as $_ID => $_ITEM):
 				
@@ -190,13 +236,18 @@ class Fincon_Woocommerce_Public {
 
 			endforeach;
 
-			$_FINCON->Logout();
-
-			//WC_Fincon_Logger::log('--End Checking Cart/Checkout Items--');
-
 		endif;
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * USER REGISTRATION - SEND TO FINCON
 	 *
@@ -207,9 +258,6 @@ class Fincon_Woocommerce_Public {
 		$_USER = get_user_by('id', $user_id);
 
 		$_FINCON = new WC_Fincon();
-
-		$_FINCON->Login();
-
 		$_TESTER = $_FINCON->GetDebAccount($_USER->user_login);
 
 		if(!$_TESTER):
@@ -227,8 +275,6 @@ class Fincon_Woocommerce_Public {
 			endif;	
 
 		endif;
-
-		$_FINCON->Logout();
 
 	}
 

@@ -22,6 +22,15 @@
  */
 class Fincon_Woocommerce_Admin {
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * The ID of this plugin.
 	 *
@@ -40,6 +49,15 @@ class Fincon_Woocommerce_Admin {
 	 */
 	private $version;
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -54,6 +72,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Register the stylesheets for the admin area.
 	 *
@@ -65,6 +92,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Register the JavaScript for the admin area.
 	 *
@@ -84,6 +120,13 @@ class Fincon_Woocommerce_Admin {
 
 
 
+
+
+
+
+
+
+	
 	/**
 	 * Creating Settings Tab Page
 	 *
@@ -101,8 +144,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
-	
 
+
+
+
+
+
+
+
+	
 	/**
 	 * Set Cron Schedules for intial import
 	 *
@@ -137,6 +187,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Get Cron Schedules
 	 *
@@ -160,6 +219,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Set Cron Schedules
 	 *
@@ -235,6 +303,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Add Columns to shop order table for the Fincon Sales Order Number
 	 *
@@ -256,6 +333,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Outputs Column Data for Fincon Sales Order Number on the shop order table
 	 *
@@ -290,6 +376,15 @@ class Fincon_Woocommerce_Admin {
 	
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Once an order is marked as paid - send to fincon
 	 *
@@ -300,12 +395,8 @@ class Fincon_Woocommerce_Admin {
 		if(!get_post_meta($order_id, '_fincon_sales_order', true)):
 
 			$_FINCON = new WC_Fincon();
-
-			$_FINCON->Login();
 			
 			$_FINCON->run_sales_order($order_id);
-
-			$_FINCON->Logout();
 
 			if(get_option('fincon_woocommerce_enable_so_email') == 'yes' && get_post_meta($order_id, '_fincon_sales_error', true)):
 				$this->do_email_notification('so', $_FINCON->_ERRORS, $order_id);
@@ -317,6 +408,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Ajax function for manually sending a Sales Order to Fincon
 	 *
@@ -327,12 +427,8 @@ class Fincon_Woocommerce_Admin {
 		$O = $_POST['o'];
 
 		$_FINCON = new WC_Fincon();
-
-		$_FINCON->Login();
 		
 		$_FINCON->run_sales_order($O);
-
-		$_FINCON->Logout();
 
 		unset($_FINCON);
 
@@ -367,6 +463,15 @@ class Fincon_Woocommerce_Admin {
 		exit;
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Checks whether the Fincon Connection is active
 	 *
@@ -390,6 +495,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Checks whether the Fincon Connection is active
 	 *
@@ -419,6 +533,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Cleans Old Logs
 	 *
@@ -428,6 +551,15 @@ class Fincon_Woocommerce_Admin {
 		WC_Fincon_Logger::clean();
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Email Notifications
 	 *
@@ -533,6 +665,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Admin hook for custom pages
 	 *
@@ -544,6 +685,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Status page
 	 *
@@ -781,6 +931,15 @@ class Fincon_Woocommerce_Admin {
         <?php
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Adds loading overlay
 	 *
@@ -796,6 +955,15 @@ class Fincon_Woocommerce_Admin {
 	  	<?php
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Function to manage import and update of stock.
 	 *
@@ -827,6 +995,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Function to manage import and update of Users.
 	 *
@@ -862,8 +1039,13 @@ class Fincon_Woocommerce_Admin {
 
 
 
-	
 
+
+
+
+
+
+	
 	/**
 	 * AJAX Function to run a product sync
 	 *
@@ -883,6 +1065,15 @@ class Fincon_Woocommerce_Admin {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * AJAX Function to run a user sync
 	 *
@@ -901,6 +1092,15 @@ class Fincon_Woocommerce_Admin {
 		exit;
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * AJAX Function to check the FINCON connection
 	 *
@@ -915,8 +1115,15 @@ class Fincon_Woocommerce_Admin {
 		exit;
 	}
 
-	
 
+
+
+
+
+
+
+
+	
 	/**
 	 * REMOVE AND LIMIT CHECKOUT FIELDS 
 	 *

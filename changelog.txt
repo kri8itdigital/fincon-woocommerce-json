@@ -1,3 +1,9 @@
+= 2.1.0 - September 14, 2021 = 
+* FULL RELEASE
+* Update: Login system rework
+* Update: Code refactoring and removals
+* Fix: User Delete include
+
 = 2.0.5 - June 15, 2021 = 
 * Feature: Assign Payments to Sales Orders
 

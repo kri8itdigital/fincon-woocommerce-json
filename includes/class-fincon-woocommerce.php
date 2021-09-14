@@ -57,6 +57,15 @@ class Fincon_Woocommerce {
 	 */
 	protected $version;
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Define the core functionality of the plugin.
 	 *
@@ -70,7 +79,7 @@ class Fincon_Woocommerce {
 		if ( defined( 'FINCON_WOOCOMMERCE_VERSION' ) ) {
 			$this->version = FINCON_WOOCOMMERCE_VERSION;
 		} else {
-			$this->version = '2.0.5';
+			$this->version = '2.1.0';
 		}
 		$this->plugin_name = 'fincon-woocommerce';
 
@@ -81,6 +90,15 @@ class Fincon_Woocommerce {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Load the required dependencies for this plugin.
 	 *
@@ -137,6 +155,15 @@ class Fincon_Woocommerce {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
@@ -154,6 +181,15 @@ class Fincon_Woocommerce {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Register all of the hooks related to the admin area functionality
 	 * of the plugin.
@@ -215,6 +251,15 @@ class Fincon_Woocommerce {
 
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Register all of the hooks related to the public-facing functionality
 	 * of the plugin.
@@ -241,12 +286,17 @@ class Fincon_Woocommerce {
 
 		endif;
 
-		if(get_option('fincon_woocommerce_create_users') == 'yes'):
-			//$this->loader->add_action('user_register', $plugin_public, 'user_register', 999, 1);
-		endif;
-
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *
@@ -256,6 +306,15 @@ class Fincon_Woocommerce {
 		$this->loader->run();
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * The name of the plugin used to uniquely identify it within the context of
 	 * WordPress and to define internationalization functionality.
@@ -267,6 +326,15 @@ class Fincon_Woocommerce {
 		return $this->plugin_name;
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
@@ -277,6 +345,15 @@ class Fincon_Woocommerce {
 		return $this->loader;
 	}
 
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Retrieve the version number of the plugin.
 	 *

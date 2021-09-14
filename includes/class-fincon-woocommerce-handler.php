@@ -57,7 +57,7 @@ class WC_Fincon{
 		$this->_URL 		= trailingslashit(get_option('fincon_woocommerce_url'));
 
 		if(!strstr($this->_URL, 'datasnap/rest/FinconAPI')):
-			$this->_URL = trailingslashit($this->_URL.'datasnap/rest/FinconAPI');
+			$this->_URL = trailingslashit($this->_URL).'datasnap/rest/FinconAPI';
 		endif;
 
 		$this->_AUTH_UN		= get_option('fincon_woocommerce_auth_username');
@@ -179,16 +179,6 @@ class WC_Fincon{
 	 */
 	public function Login(){
 
-		if(get_option('fincon_woocommerce_logged_in_session')):
-
-			if($this->GetSessionInfo(get_option('fincon_woocommerce_logged_in_session'))):
-				$this->_ID = get_option('fincon_woocommerce_logged_in_session');
-			else:
-				delete_option('fincon_woocommerce_logged_in_session');
-			endif;
-
-		endif;
-
 		if(!$this->_ID):
 
 			$_ENDPOINT = 'Login';
@@ -199,10 +189,6 @@ class WC_Fincon{
 			if($_RESPONSE['Connected']):
 
 				$this->_ID = $_RESPONSE['ConnectID'];
-
-				update_option('fincon_woocommerce_logged_in_session', $this->_ID);
-
-				//WC_Fincon_Logger::log('LOGIN::NEW ID('.$_RESPONSE['ConnectID'].')');
 
 				return true;
 
@@ -216,13 +202,13 @@ class WC_Fincon{
 
 				$this->_ERRORS[] = 'Could Not Login';
 
-				WC_Fincon_Logger::log('LOGIN::ERROR--');
+				WC_Fincon_Logger::log('LOGIN::ERROR--Could Not Login');
 
 			endif;
 
 		else:
 
-			//WC_Fincon_Logger::log('LOGIN::OLD ID('.$this->_ID.')');
+			$this->KillUsers();	
 
 		endif;
 
@@ -244,6 +230,8 @@ class WC_Fincon{
 
 		if($this->_ID):
 
+			$this->KillUsers();	
+
 			$_ENDPOINT = 'Logout';
 			$_DATA = array($this->_ID);
 
@@ -252,10 +240,6 @@ class WC_Fincon{
 			if($_RESPONSE['Disconnected']):
 
 				$this->_ID = 0;
-
-				//WC_Fincon_Logger::log('LOGOUT::SUCCESS');
-
-				delete_option('fincon_woocommerce_logged_in_session');
 
 				return true;
 
@@ -272,10 +256,6 @@ class WC_Fincon{
 				WC_Fincon_Logger::log('LOGOUT::ERROR');
 
 			endif;
-
-		else:
-
-			//WC_Fincon_Logger::log('LOGOUT::ALREADY OUT');
 
 		endif;
 
@@ -296,18 +276,61 @@ class WC_Fincon{
 	/*
 	
 	 */
-	public function GetSessionInfo($TESTER = null){
+	public function GetSessionInfo(){
 
-		if(!$TESTER):
-			$TESTER = $this->_ID;
-		endif;
-
-		if($TESTER):
+		if($this->_ID):
 
 			$_ENDPOINT = 'GetSessionInfo';
 
 			$_DATA = array(
 				$TESTER
+			);
+
+			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
+
+			if(!isset($_RESPONSE['ErrorInfo']) || $_RESPONSE['ErrorInfo'] == ""):
+				return true;
+			elseif($_RESPONSE['ErrorInfo'] != ""):
+				$this->_ERRORS[] = $_RESPONSE['ErrorInfo']; 
+			else:
+				$this->_ERRORS[] = 'An Error Occurred.';
+			endif;
+
+		else:
+
+			$this->_ERRORS[] = 'Not ID to KeepAlive';
+
+		endif;
+
+		return false;
+
+		
+	}
+
+
+
+
+
+
+
+
+
+	
+	/*
+	
+	 */
+	public function KeepAlive($_TESTER = false){
+
+		if(!$_TESTER):
+			$_TESTER = $this->_ID;
+		endif;
+
+		if($_TESTER):
+
+			$_ENDPOINT = 'KeepAlive';
+
+			$_DATA = array(
+				$_TESTER
 			);
 
 			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
@@ -341,7 +364,51 @@ class WC_Fincon{
 
 	
 	/*
-	HELPER - VALIDATE
+	
+	 */
+	public function KillUsers(){
+
+		if($this->_ID):
+
+			$_ENDPOINT = 'KillUsers';
+
+			$_DATA = array(
+				$this->_ID,
+				0
+			);
+
+			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
+
+			if(!isset($_RESPONSE['ErrorInfo']) || $_RESPONSE['ErrorInfo'] == ""):
+				return true;
+			elseif($_RESPONSE['ErrorInfo'] != ""):
+				$this->_ERRORS[] = $_RESPONSE['ErrorInfo']; 
+			else:
+				$this->_ERRORS[] = 'An Error Occurred.';
+			endif;
+
+		else:
+
+			$this->_ERRORS[] = 'Not Logged Out';
+
+		endif;
+
+		return false;
+
+		
+	}
+
+
+
+
+
+
+
+
+
+	
+	/*
+	HELPER - VALIDATE CUSTOM
 	 */
 	public static function ValidateCustom($URL, $AUN, $APW, $DATA, $DUN, $DPW){
 
@@ -458,6 +525,16 @@ class WC_Fincon{
 
 
 
+
+
+
+
+
+
+	
+	/*
+	HELPER - VALIDATE SYNC
+	 */
 	public function Validate(){
 
 		$_SUCCESS = true;
@@ -465,45 +542,35 @@ class WC_Fincon{
 
 		WC_Fincon_Logger::log('Connection Sync Running');
 
-		if(get_option('fincon_woocommerce_logged_in_session') && (get_option('fincon_woocommerce_product_sync_running') == 'yes' || get_option('fincon_woocommerce_user_sync_running') == 'yes')):
+		$this->_ERRORS = array();
 
-			if(!$this->GetSessionInfo(get_option('fincon_woocommerce_logged_in_session'))):
-				$_SUCCESS = false;
-			endif;
+		$this->Login();
+
+		if(count($this->_ERRORS) > 0):
+
+			$_SUCCESS = false;
 
 		else:
 
-			$this->_ERRORS = array();
+			if($this->_ID > 0 && $this->GetSessionInfo($this->_ID)):
 
-			$this->Login();
+				$this->_ERRORS = array();
 
-			if(count($this->_ERRORS) > 0):
-
-				$_SUCCESS = false;
-
-			else:
-
-				if($this->_ID > 0 && $this->GetSessionInfo($this->_ID)):
-
-					$this->_ERRORS = array();
-
-					$this->Logout();
-
-					if(count($this->_ERRORS) > 0):						
-
-						$_SUCCESS = false;
-
-					endif;
-
-				else:					
+				if(count($this->_ERRORS) > 0):						
 
 					$_SUCCESS = false;
 
 				endif;
 
+			else:					
+
+				$_SUCCESS = false;
+
 			endif;
 
 		endif;
+
+		$this->Logout();
 
 		if($_SUCCESS):
 			WC_Fincon_Logger::log('Connection Sync SUCCESS');
@@ -534,6 +601,8 @@ class WC_Fincon{
 	 */
 	public function GetStock($RecNo = 0, $Count = null, $MinItemNo = '', $MaxItemNo = null, $LocNo = '', $WebOnly = true){
 
+		$this->Login();
+
 		if($this->_ID):
 
 			$_ENDPOINT = 'GetStock';
@@ -557,6 +626,8 @@ class WC_Fincon{
 			);
 
 			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
+
+			$this->Logout();
 
 			if($_RESPONSE['Count'] == 1):
 				return reset($_RESPONSE['Stock']);
@@ -592,6 +663,8 @@ class WC_Fincon{
 	 */
 	public function GetStockItem( $MinItemNo = '', $MaxItemNo = null, $RecNo = 0, $Count = 1, $LocNo = '', $WebOnly = false){
 
+		$this->Login();
+
 		if($this->_ID):
 
 			$_ENDPOINT = 'GetStock';
@@ -615,6 +688,8 @@ class WC_Fincon{
 			);
 
 			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
+
+			$this->Logout();
 
 			if($_RESPONSE['Count'] == 1):
 				return reset($_RESPONSE['Stock']);
@@ -651,6 +726,8 @@ class WC_Fincon{
 	 */
 	public function GetStockQuantity($MinItemNo, $LocNo = null, $WebOnly = false, $SkipIfZero = true, $RecNo = 0, $Count = 1, $MaxItemNo = ''){
 
+		$this->Login();
+
 		if($this->_ID):
 
 			$_ENDPOINT = 'GetStockQuantities';
@@ -684,6 +761,8 @@ class WC_Fincon{
 
 
 			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
+
+			$this->Logout();
 
 			if($_RESPONSE['Count'] > 0):
 
@@ -740,6 +819,8 @@ class WC_Fincon{
 	 */
 	public function GetStockChanged($FromDate,$FromTime,$RecNo = 0, $LocNo = null, $WebOnly = false){
 
+		$this->Login();
+
 		if($this->_ID):
 
 			$_ENDPOINT = 'GetStockChanged';
@@ -771,6 +852,8 @@ class WC_Fincon{
 			);
 
 			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
+
+			$this->Logout();
 
 			if($_RESPONSE['ErrorInfo'] == ""):
 				return $_RESPONSE;
@@ -804,6 +887,7 @@ class WC_Fincon{
 	
 	 */
 	public function GetStockPictures( $MinItemNo = '', $MaxItemNo = null, $RecNo = 0, $Count = 1, $WebOnly = false, $SkipIfBlank = false){
+		$this->Login();
 
 		if($this->_ID):
 
@@ -820,6 +904,8 @@ class WC_Fincon{
 			);
 
 			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
+
+			$this->Logout();
 
 			if($_RESPONSE['ErrorInfo'] == ""):
 				return $_RESPONSE['Stock'];
@@ -853,6 +939,8 @@ class WC_Fincon{
 	
 	 */
 	public function GetDebAccount($MinAccNo = '', $Count = 1, $MaxAccNo = '', $RecNo = 0){
+		
+		$this->Login();
 
 		if($this->_ID):
 
@@ -875,6 +963,7 @@ class WC_Fincon{
 			);
 
 			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
+			$this->Logout();
 
 			if($_RESPONSE['Count'] == 1):
 				return reset($_RESPONSE['Accounts']);
@@ -911,6 +1000,8 @@ class WC_Fincon{
 	 */
 	public function GetDebAccounts($RecNo = 0, $Count = null, $MinAccNo = '', $MaxAccNo = ''){
 
+		$this->Login();
+
 		if($this->_ID):
 
 			$_ENDPOINT = 'GetDebAccounts';
@@ -932,6 +1023,8 @@ class WC_Fincon{
 			);
 
 			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
+
+			$this->Logout();
 
 			if($_RESPONSE['Count'] == 1):
 				return reset($_RESPONSE['Accounts']);
@@ -967,6 +1060,8 @@ class WC_Fincon{
 	
 	 */
 	public function GetDebAccountsChanged($FromDate,$FromTime,$RecNo = 0){
+		
+		$this->Login();
 
 		if($this->_ID):
 
@@ -981,6 +1076,8 @@ class WC_Fincon{
 			);
 
 			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
+
+			$this->Logout();
 
 			if($_RESPONSE['ErrorInfo'] == ""):
 				return $_RESPONSE;
@@ -1015,6 +1112,8 @@ class WC_Fincon{
 	 */
 	public function CreateSalesOrder($_SO){
 
+		$this->Login();
+
 		if($this->_ID):
 
 			$_ENDPOINT = '"CreateSalesOrder"';
@@ -1024,6 +1123,8 @@ class WC_Fincon{
 			);
 
 			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA, $_SO);
+
+			$this->Logout();
 
 
 			if($_RESPONSE['ErrorInfo'] == ""):
@@ -2018,6 +2119,8 @@ class WC_Fincon{
 	
 	 */
 	public function run_account_sync($ISCRON = false){
+
+		require_once(ABSPATH.'wp-admin/includes/user.php');
 
 		$_TYPE = 'full';
 
