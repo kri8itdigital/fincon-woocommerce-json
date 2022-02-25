@@ -1,3 +1,9 @@
+= 2.2.0 - February 25, 2022 = 
+* FULL RELEASE
+* Feature: Sync Detailed Description
+* Update: URL encoding for Stock Item Numbers via API
+* Update: Image syncing - changed process to only sync images for NEW products, or for those that don't have.
+
 = 2.1.0 - September 14, 2021 = 
 * FULL RELEASE
 * Update: Login system rework

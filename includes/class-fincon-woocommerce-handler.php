@@ -37,10 +37,14 @@ class WC_Fincon{
 
 	var $_ORDER_STATUS = false;
 
+	var $_DETAILED = false;
+
 	var $_ERR 		= '';
 	var $_ERRORS 	= array();
 
 	var $_PAYMENTS  = false;
+
+	var $_DEBUG  = false;
 
 
 
@@ -77,6 +81,8 @@ class WC_Fincon{
 		$this->_PROD_STATUS = get_option('fincon_woocommerce_product_status');
 		$this->_DECIMAL		= wc_get_price_decimals();
 
+		$this->_DETAILED  	= get_option('fincon_woocommerce_product_detailed');
+
 		if(get_option('fincon_woocommerce_sync_product_images') == 'yes'):
 			$this->_SYNC_IMAGES = true;
 		endif;		
@@ -108,6 +114,8 @@ class WC_Fincon{
 		if(get_option('fincon_woocommerce_sync_orders_payments') == 'yes'):
 			$this->_PAYMENTS = true;
 		endif;
+
+		$this->_DEBUG = $_DEBUG;
 	}
 
 
@@ -615,6 +623,14 @@ class WC_Fincon{
 				$MaxItemNo = $MinItemNo;
 			endif;
 
+			if(strstr($MinItemNo, "/")):
+				$MinItemNo = urlencode($MinItemNo);
+			endif;
+
+			if(strstr($MaxItemNo, "/")):
+				$MaxItemNo = urlencode($MaxItemNo);
+			endif;
+
 			$_DATA = array(
 				$this->_ID,
 				$MinItemNo,
@@ -675,6 +691,14 @@ class WC_Fincon{
 
 			if(!$MaxItemNo && $Count == 1):
 				$MaxItemNo = $MinItemNo;
+			endif;
+
+			if(strstr($MinItemNo, "/")):
+				$MinItemNo = urlencode($MinItemNo);
+			endif;
+
+			if(strstr($MaxItemNo, "/")):
+				$MaxItemNo = urlencode($MaxItemNo);
 			endif;
 
 			$_DATA = array(
@@ -747,6 +771,14 @@ class WC_Fincon{
 			endforeach;
 
 			$LocNo = implode(",", $_THE_LOCS);
+
+			if(strstr($MinItemNo, "/")):
+				$MinItemNo = urlencode($MinItemNo);
+			endif;
+
+			if(strstr($MaxItemNo, "/")):
+				$MaxItemNo = urlencode($MaxItemNo);
+			endif;
 
 			$_DATA = array(
 				$this->_ID,
@@ -857,6 +889,71 @@ class WC_Fincon{
 
 			if($_RESPONSE['ErrorInfo'] == ""):
 				return $_RESPONSE;
+			elseif($_RESPONSE['ErrorInfo'] != ""):
+				$this->_ERRORS[] = $_RESPONSE['ErrorInfo']; 
+			else:
+				$this->_ERRORS[] = 'An Error Occurred.';
+			endif;
+
+		else:
+
+			$this->_ERRORS[] = 'No Connect ID Present';
+
+		endif;
+
+		return false;
+
+		
+	}
+
+
+
+
+
+
+
+
+
+	
+	/*
+	
+	 */
+	public function GetDetailDescriptions( $MinItemNo = '', $MaxItemNo = false, $RecNo = 0, $Count = 1, $WebOnly = false, $SkipIfBlank = false){
+
+		$this->Login();
+
+		if($this->_ID):
+
+			$_ENDPOINT = 'GetDetailDescriptions';
+
+			if(!$MaxItemNo):
+				$MaxItemNo = $MinItemNo;
+			endif;
+
+			if(strstr($MinItemNo, "/")):
+				$MinItemNo = urlencode($MinItemNo);
+			endif;
+
+			if(strstr($MaxItemNo, "/")):
+				$MaxItemNo = urlencode($MaxItemNo);
+			endif;
+
+			$_DATA = array(
+				$this->_ID,
+				urlencode($MinItemNo),
+				urlencode($MaxItemNo),
+				(int)$WebOnly,
+				(int)$SkipIfBlank,
+				$RecNo,
+				$Count
+			);
+
+			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
+
+			$this->Logout();
+
+			if($_RESPONSE['ErrorInfo'] == ""):
+				return $_RESPONSE['Stock'];
 			elseif($_RESPONSE['ErrorInfo'] != ""):
 				$this->_ERRORS[] = $_RESPONSE['ErrorInfo']; 
 			else:
@@ -1801,7 +1898,7 @@ class WC_Fincon{
 
 		$_DONE += $_COUNT;
 
-		if($_REC_NO == 0 || $_COUNT < $this->_ITERATE):
+		if($_REC_NO == 0 || $_COUNT < $this->_S_ITERATE):
 
 			delete_option('fincon_woocommerce_product_sync_rec_no', $_REC_NO);
 			update_option('fincon_woocommerce_product_sync_last_date', wp_date('Y-m-d'));
@@ -1891,7 +1988,11 @@ class WC_Fincon{
 
 				$_PROD->set_catalog_visibility('visible');
 
-				$_PROD->set_description($Description);
+				if($this->_DETAILED == 'no'):
+
+					$_PROD->set_description($Description);
+
+				endif;
 
 				$_PROD->set_manage_stock(true);
 
@@ -1904,14 +2005,41 @@ class WC_Fincon{
 
 			endif;
 
+			if(($this->_DETAILED == 'create' && $_NEW) || $this->_DETAILED == 'update'):
+
+				$_THE_DESCRIPTION = $Description;
+
+				$_DESCRIPTIONS = $this->GetDetailDescriptions($ItemNo);
+
+				if(count($_DESCRIPTIONS) > 0):
+
+					$_FIRST_DESC = reset($_DESCRIPTIONS);
+
+					if(isset($_FIRST_DESC['DetailDescription']) && $_FIRST_DESC['DetailDescription'] != ''):
+
+						$_THE_DESCRIPTION = $_FIRST_DESC['DetailDescription'];
+
+						//$_THE_DESCRIPTION = str_replace('<CR><CR>', '<br/><br/>', $_THE_DESCRIPTION);
+
+					endif;
+
+				endif;
+
+				$_PROD->set_description($_THE_DESCRIPTION);
+
+			endif;
+
+			$_CATS = array();
+
 			if($this->_PROD_CAT):
+
+				$_CAT_ID = 0;
+
 				if($CatDescription):
 
 					$_CAT_ITEMS = explode(" > ", $CatDescription);
 
 					array_reverse($_CAT_ITEMS);
-
-					$_CAT_ID = 0;
 
 					foreach($_CAT_ITEMS as $_CAT):
 
@@ -1925,7 +2053,7 @@ class WC_Fincon{
 
 				else:
 
-					$_CAT_ID  	= $this->get_category_id($Category, $Category, $_CAT_ID);
+					$_CAT_ID = $this->get_category_id($Category, $Category, $_CAT_ID);
 
 					if($_CAT_ID):
 						$_CATS[] = $_CAT_ID;
@@ -2008,36 +2136,26 @@ class WC_Fincon{
 			$_PROD->set_height($BoxHeight);
 
 
-			if($_DO_IMAGES):
-
-				$_ATTACHMENTS = array();
+			if($_DO_IMAGES && !$_PROD->get_image_id()):
 
 				$_IMAGES = $this->GetStockPictures($ItemNo);
 
 				if($_IMAGES):
-					foreach($_IMAGES AS $_IMAGE):
 
-						if($_IMAGE['Picture'] != ''):
+					$_THE_IMAGE = reset($_IMAGES);
 
-							$_ATTACHMENT_ID =  $this->upload_attach_image($ItemNo, $_IMAGE['Picture']);
+					if($_IMAGE['Picture'] != ''):
 
-							if($_ATTACHMENT_ID):
+						$_ATTACHMENT_ID =  $this->upload_attach_image($ItemNo, $_THE_IMAGE['Picture']);
 
-								if(!$_PROD->get_image_id()):
-									$_PROD->set_image_id($_ATTACHMENT_ID);
-								else:
-									$_ATTACHMENTS[] = $_ATTACHMENT_ID;
-								endif;
+						if($_ATTACHMENT_ID):
 
-							endif;
+							$_PROD->set_image_id($_ATTACHMENT_ID);
 
 						endif;
 
-					endforeach;
-
-					if(count($_ATTACHMENTS) > 0):
-						$_PROD->set_gallery_image_ids($_ATTACHMENTS);
 					endif;
+
 				endif;
 
 			endif;
@@ -2206,7 +2324,7 @@ class WC_Fincon{
 
 		$_DONE += $_COUNT;
 
-		if($_REC_NO == 0 || $_COUNT < $this->_ITERATE):
+		if($_REC_NO == 0 || $_COUNT < $this->_U_ITERATE):
 
 			delete_option('fincon_woocommerce_user_sync_rec_no', $_REC_NO);
 			update_option('fincon_woocommerce_user_sync_last_date', wp_date('Y-m-d'));

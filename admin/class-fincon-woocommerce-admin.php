@@ -1108,7 +1108,7 @@ class Fincon_Woocommerce_Admin {
 	 */
 	public static function fincon_admin_trigger_connection_sync(){
 
-		$this->check_api();
+		self::check_api();
 
 		echo 'yes';
 

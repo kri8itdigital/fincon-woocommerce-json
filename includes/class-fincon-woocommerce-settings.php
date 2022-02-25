@@ -230,7 +230,7 @@ class fincon_woocommerce_settings extends WC_Settings_Page {
 						'type'          => 'checkbox'
 					),
 					array(
-						'desc'          => __( 'Sync Product Images', 'fincon-woocommerce' ),
+						'desc'          => __( 'Sync Product Images (Does not update)', 'fincon-woocommerce' ),
 						'id'            => 'fincon_woocommerce_sync_product_images',
 						'default'       => 'no',
 						'checkboxgroup' => '',
@@ -250,7 +250,6 @@ class fincon_woocommerce_settings extends WC_Settings_Page {
 						'checkboxgroup' => '',
 						'type'          => 'checkbox'
 					),
-
 					array(
 						'desc'          => __( 'Sync Fincon Group to Woocommerce Categories', 'fincon-woocommerce' ),
 						'id'            => 'fincon_woocommerce_sync_product_group',
@@ -290,12 +289,25 @@ class fincon_woocommerce_settings extends WC_Settings_Page {
 						'id' 			=> 'fincon_woocommerce_price',
 					),
 					array (
+							'title' 	=> __('Product Descriptions', 'fincon-woocommerce'),
+							'desc' 		=> __('Sync Detailed Description with your product content field', 'fincon-woocommerce' ),
+							'type' 		=> 'select',
+							'default' 	=> '',
+							'id' 		=> 'fincon_woocommerce_product_detailed',
+							'default' 	=> 'update',
+							'options'   => array(
+								'no'		=> __( 'No - do not sync them', 'fincon-woocommerce' ),
+								'create'	=> __( 'Yes - but only when a product gets created. (Ignore updates)', 'fincon-woocommerce' ),
+								'update'	=> __( 'Yes - overwrite my local content.', 'fincon-woocommerce' )
+							)
+					),
+					array (
 							'title' 	=> __('Product Status', 'fincon-woocommerce'),
 							'desc' 		=> __('Set added product status to', 'fincon-woocommerce' ),
 							'type' 		=> 'select',
 							'default' 	=> '',
 							'id' 		=> 'fincon_woocommerce_product_status',
-							'default' 	=> 'None',
+							'default' 	=> 'draft',
 							'options'   => array(
 								'draft'	=> __( 'Draft', 'fincon-woocommerce' ),
 								'publish'	=> __( 'Published', 'fincon-woocommerce' )
