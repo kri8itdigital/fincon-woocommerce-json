@@ -1,3 +1,7 @@
+= 2.2.2 - May 16, 2022 = 
+* FIX RELEASE
+* CRON URL & Github RAW fix
+
 = 2.2.1 - May 13, 2022 = 
 * FIX RELEASE
 * URL & Github fix release
