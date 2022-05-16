@@ -36,7 +36,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Rename this for your plugin and update it as you release new versions.
  */
 define( 'FINCON_WOOCOMMERCE_VERSION', '2.2.2' );
-define( 'FINCON_WOOCOMMERCE_CRON_BASE', str_replace("fincon-woocommerce.php", "cron.php", trailingslashit(get_site_url()).'wp-content/plugins/'.plugin_basename(__FILE__)));
+define( 'FINCON_WOOCOMMERCE_CRON_BASE', str_replace("fincon-woocommerce-json.php", "cron.php", trailingslashit(get_site_url()).'wp-content/plugins/'.plugin_basename(__FILE__)));
 
 /**
  * The code that runs during plugin activation.
