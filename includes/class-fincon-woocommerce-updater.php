@@ -234,7 +234,7 @@ class fincon_updater
 
         if ( $this->overrule_transients() || ( !isset( $version ) || !$version || '' == $version ) ) {
 
-            $raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ) );
+            $raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['proper_folder_name'] ).'.php' );
 
             if ( is_wp_error( $raw_response ) ) {
                 $version = false;
@@ -262,7 +262,7 @@ class fincon_updater
                     return $version;
                 }
 
-                preg_match( '#^\s*`*~Current Version\:\s*([^~]*)~#im', $raw_response['body'], $__version );
+                preg_match( '/.*Current Version\:\s*(.*)$/im', $raw_response['body'], $__version );
 
                 if ( isset( $__version[1] ) ) {
                     $version_readme = $__version[1];
