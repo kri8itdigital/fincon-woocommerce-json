@@ -166,6 +166,8 @@ class WC_Fincon{
 
 		$_RESULT = curl_exec($_CALL);
 
+		curl_close($_CALL);
+
 		$_RESULT = json_decode($_RESULT,true);
 
 		return $_RESULT['result'][0];
