@@ -625,11 +625,11 @@ class WC_Fincon{
 				$MaxItemNo = $MinItemNo;
 			endif;
 
-			if(strstr($MinItemNo, "/")):
+			if(strstr($MinItemNo, "/") || strstr($MinItemNo, "\"")):
 				$MinItemNo = urlencode($MinItemNo);
 			endif;
 
-			if(strstr($MaxItemNo, "/")):
+			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
 				$MaxItemNo = urlencode($MaxItemNo);
 			endif;
 
@@ -695,11 +695,11 @@ class WC_Fincon{
 				$MaxItemNo = $MinItemNo;
 			endif;
 
-			if(strstr($MinItemNo, "/")):
+			if(strstr($MinItemNo, "/") || strstr($MinItemNo, "\"")):
 				$MinItemNo = urlencode($MinItemNo);
 			endif;
 
-			if(strstr($MaxItemNo, "/")):
+			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
 				$MaxItemNo = urlencode($MaxItemNo);
 			endif;
 
@@ -774,11 +774,11 @@ class WC_Fincon{
 
 			$LocNo = implode(",", $_THE_LOCS);
 
-			if(strstr($MinItemNo, "/")):
+			if(strstr($MinItemNo, "/") || strstr($MinItemNo, "\"")):
 				$MinItemNo = urlencode($MinItemNo);
 			endif;
 
-			if(strstr($MaxItemNo, "/")):
+			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
 				$MaxItemNo = urlencode($MaxItemNo);
 			endif;
 
@@ -932,11 +932,11 @@ class WC_Fincon{
 				$MaxItemNo = $MinItemNo;
 			endif;
 
-			if(strstr($MinItemNo, "/")):
+			if(strstr($MinItemNo, "/") || strstr($MinItemNo, "\"")):
 				$MinItemNo = urlencode($MinItemNo);
 			endif;
 
-			if(strstr($MaxItemNo, "/")):
+			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
 				$MaxItemNo = urlencode($MaxItemNo);
 			endif;
 
@@ -1701,10 +1701,11 @@ class WC_Fincon{
 
 		$post_id = wc_get_product_id_by_sku($SKU);
 
-	    $image_data       	= base64_decode($DATA);
+	    $image_data = base64_decode($DATA);
 
 	    $file_info = $this->mime_extension($SKU, $DATA);
 
+	    	
 	    if($file_info):
 
 		    $image_name       	= $SKU.'.'.$file_info['ext'];
@@ -2144,11 +2145,11 @@ class WC_Fincon{
 
 				if($_IMAGES):
 
-					$_THE_IMAGE = reset($_IMAGES);
+					$_IMAGE = reset($_IMAGES);
 
 					if($_IMAGE['Picture'] != ''):
 
-						$_ATTACHMENT_ID =  $this->upload_attach_image($ItemNo, $_THE_IMAGE['Picture']);
+						$_ATTACHMENT_ID =  $this->upload_attach_image($ItemNo, $_IMAGE['Picture']);
 
 						if($_ATTACHMENT_ID):
 
