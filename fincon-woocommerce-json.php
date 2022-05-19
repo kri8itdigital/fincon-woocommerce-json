@@ -83,7 +83,7 @@ function fincon_woocommerce_check_for_update(){
 	        'homepage'           => 'https://github.com/kri8itdigital/fincon-woocommerce-json',
 	        'sslverify'          => true,
 	        'requires'           => '5.0',
-	        'tested'             => '5.7',
+	        'tested'             => '5.9.3',
 	        'readme'             => 'README.md',
 	        'version'			 => '2.2.4'
 	    );
