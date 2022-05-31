@@ -166,6 +166,7 @@ class WC_Fincon{
 
 		$_RESULT = curl_exec($_CALL);
 
+
 		curl_close($_CALL);
 
 		$_RESULT = json_decode($_RESULT,true);
@@ -626,11 +627,11 @@ class WC_Fincon{
 			endif;
 
 			if(strstr($MinItemNo, "/") || strstr($MinItemNo, "\"")):
-				$MinItemNo = urlencode($MinItemNo);
+				$MinItemNo = rawurlencode($MinItemNo);
 			endif;
 
 			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
-				$MaxItemNo = urlencode($MaxItemNo);
+				$MaxItemNo = rawurlencode($MaxItemNo);
 			endif;
 
 			$_DATA = array(
@@ -696,11 +697,11 @@ class WC_Fincon{
 			endif;
 
 			if(strstr($MinItemNo, "/") || strstr($MinItemNo, "\"")):
-				$MinItemNo = urlencode($MinItemNo);
+				$MinItemNo = rawurlencode($MinItemNo);
 			endif;
 
 			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
-				$MaxItemNo = urlencode($MaxItemNo);
+				$MaxItemNo = rawurlencode($MaxItemNo);
 			endif;
 
 			$_DATA = array(
@@ -775,11 +776,11 @@ class WC_Fincon{
 			$LocNo = implode(",", $_THE_LOCS);
 
 			if(strstr($MinItemNo, "/") || strstr($MinItemNo, "\"")):
-				$MinItemNo = urlencode($MinItemNo);
+				$MinItemNo = rawurlencode($MinItemNo);
 			endif;
 
 			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
-				$MaxItemNo = urlencode($MaxItemNo);
+				$MaxItemNo = rawurlencode($MaxItemNo);
 			endif;
 
 			$_DATA = array(
@@ -933,17 +934,17 @@ class WC_Fincon{
 			endif;
 
 			if(strstr($MinItemNo, "/") || strstr($MinItemNo, "\"")):
-				$MinItemNo = urlencode($MinItemNo);
+				$MinItemNo = rawurlencode($MinItemNo);
 			endif;
 
 			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
-				$MaxItemNo = urlencode($MaxItemNo);
+				$MaxItemNo = rawurlencode($MaxItemNo);
 			endif;
 
 			$_DATA = array(
 				$this->_ID,
-				urlencode($MinItemNo),
-				urlencode($MaxItemNo),
+				$MinItemNo,
+				$MaxItemNo,
 				(int)$WebOnly,
 				(int)$SkipIfBlank,
 				$RecNo,

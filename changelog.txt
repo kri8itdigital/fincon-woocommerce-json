@@ -1,3 +1,6 @@
+= 2.2.6 - May 31, 2022 =
+* Fix Release - swap out urlencode for rawurlencode for certain hosting platforms
+
 = 2.2.5 - May 19, 2022 = 
 * Fix Release - wordpress tested versioning
 
