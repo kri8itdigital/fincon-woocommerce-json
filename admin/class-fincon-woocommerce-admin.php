@@ -924,7 +924,7 @@ class Fincon_Woocommerce_Admin {
     	<?php endif; ?>
 
     	<div class="fincon-admin-trigger-block">
-    		<a class="fincon-admin-trigger" data-trigger="fincon_admin_trigger_product_sync"><span class="dashicons dashicons-cart"></span> Trigger Product Sync</a> | <a class="fincon-admin-trigger" data-trigger="fincon_admin_trigger_user_sync"><span class="dashicons dashicons-admin-users"></span> Trigger User Sync</a> | <a class="fincon-admin-trigger" data-trigger="fincon_admin_trigger_connection_sync"><span class="dashicons dashicons-admin-tools"></span> Trigger Connection Sync</a>
+    		<a class="fincon-admin-trigger" data-trigger="fincon_admin_trigger_product_sync_full"><span class="dashicons dashicons-cart"></span> Trigger Full Product Sync</a> |<a class="fincon-admin-trigger" data-trigger="fincon_admin_trigger_product_sync"><span class="dashicons dashicons-cart"></span> Trigger Update Product Sync</a> | <a class="fincon-admin-trigger" data-trigger="fincon_admin_trigger_user_sync_full"><span class="dashicons dashicons-admin-users"></span> Trigger Full User Sync</a> | <a class="fincon-admin-trigger" data-trigger="fincon_admin_trigger_user_sync"><span class="dashicons dashicons-admin-users"></span> Trigger Update User Sync</a> | <a class="fincon-admin-trigger" data-trigger="fincon_admin_trigger_connection_sync"><span class="dashicons dashicons-admin-tools"></span> Trigger Connection Sync</a>
     	</div>
         </div>
 
@@ -1047,6 +1047,40 @@ class Fincon_Woocommerce_Admin {
 
 	
 	/**
+	 * AJAX Function to run a full sync
+	 *
+	 * @since    1.2.0
+	 */
+	public static function fincon_admin_trigger_product_sync_full(){
+
+
+
+		if(!get_option('fincon_woocommerce_product_sync_running') || get_option('fincon_woocommerce_product_sync_running') == 'no'):
+
+			delete_option('fincon_woocommerce_product_sync_last_date');
+			delete_option('fincon_woocommerce_product_sync_last_time');
+			delete_option('fincon_woocommerce_product_sync_rec_no');
+
+			wp_schedule_single_event(time(), 'fincon_woocommerce_sync_products');
+
+		endif;
+
+		echo 'yes';
+
+		exit;
+
+	}
+
+
+
+
+
+
+
+
+
+	
+	/**
 	 * AJAX Function to run a product sync
 	 *
 	 * @since    1.2.0
@@ -1063,6 +1097,37 @@ class Fincon_Woocommerce_Admin {
 
 		exit;
 
+	}
+
+
+
+
+
+
+
+
+
+	
+	/**
+	 * AJAX Function to run a user sync
+	 *
+	 * @since    1.2.0
+	 */
+	public static function fincon_admin_trigger_user_sync_full(){
+
+		if(!get_option('fincon_woocommerce_user_sync_running') || get_option('fincon_woocommerce_user_sync_running') == 'no'):
+
+			delete_option('fincon_woocommerce_user_sync_last_date');
+			delete_option('fincon_woocommerce_user_sync_last_time');
+			delete_option('fincon_woocommerce_user_sync_rec_no');
+
+			wp_schedule_single_event(time(), 'fincon_woocommerce_sync_accounts');
+
+		endif;
+
+		echo 'yes';
+
+		exit;
 	}
 
 

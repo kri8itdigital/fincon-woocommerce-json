@@ -313,6 +313,19 @@ class fincon_woocommerce_settings extends WC_Settings_Page {
 								'publish'	=> __( 'Published', 'fincon-woocommerce' )
 							)
 					),
+					array (
+							'title' 	=> __('Product Remove Actions', 'fincon-woocommerce'),
+							'desc' 		=> __('When a product is no longer Active or on the Weblist - what do we do? If you select trash - this can remove the product and all it\'s information entirely', 'fincon-woocommerce' ),
+							'type' 		=> 'select',
+							'default' 	=> '',
+							'id' 		=> 'fincon_woocommerce_product_action',
+							'default' 	=> 'draft',
+							'options'   => array(
+								'draft'	=> __( 'Draft the product.', 'fincon-woocommerce' ),
+								'hide'	=> __( 'Hide the product from the catalog.', 'fincon-woocommerce' ),
+								'trash'	=> __( 'Trash the product.', 'fincon-woocommerce' )
+							)
+					),
 					array(
 						'title'         => __( 'Fincon Delivery SKU', 'fincon-woocommerce' ),
 						'desc'          => __( 'The Fincon Delivery SKU', 'fincon-woocommerce' ),

@@ -34,6 +34,7 @@ class WC_Fincon{
 	var $_PROD_GROUP 	= false;
 
 	var $_PROD_STATUS = '';
+	var $_PROD_ACTION = false;
 
 	var $_ORDER_STATUS = false;
 
@@ -79,6 +80,7 @@ class WC_Fincon{
 		$this->_COUPON 		= get_option('fincon_woocommerce_coupon');
 		$this->_PRICE 		= get_option('fincon_woocommerce_price');
 		$this->_PROD_STATUS = get_option('fincon_woocommerce_product_status');
+		$this->_PROD_ACTION = get_option('fincon_woocommerce_product_action');
 		$this->_DECIMAL		= wc_get_price_decimals();
 
 		$this->_DETAILED  	= get_option('fincon_woocommerce_product_detailed');
@@ -634,6 +636,10 @@ class WC_Fincon{
 				$MaxItemNo = rawurlencode($MaxItemNo);
 			endif;
 
+			if($LocNo == ''):
+				$LocNo = $this->_S_LOC;
+			endif;
+
 			$_DATA = array(
 				$this->_ID,
 				$MinItemNo,
@@ -702,6 +708,10 @@ class WC_Fincon{
 
 			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
 				$MaxItemNo = rawurlencode($MaxItemNo);
+			endif;
+
+			if($LocNo == ''):
+				$LocNo = $this->_S_LOC;
 			endif;
 
 			$_DATA = array(
@@ -2009,6 +2019,17 @@ class WC_Fincon{
 
 			endif;
 
+			$_PROD_OBJ = get_post($_ID);
+
+			if($_PROD_OBJ->post_status == 'draft'):
+				wp_update_post( array(
+				    'ID' => $_PROD_OBJ->ID,
+				    'post_status' => 'publish',
+				) );
+			endif;
+
+			$_PROD->set_catalog_visibility('visible');
+
 			if(($this->_DETAILED == 'create' && $_NEW) || $this->_DETAILED == 'update'):
 
 				$_THE_DESCRIPTION = $Description;
@@ -2022,8 +2043,6 @@ class WC_Fincon{
 					if(isset($_FIRST_DESC['DetailDescription']) && $_FIRST_DESC['DetailDescription'] != ''):
 
 						$_THE_DESCRIPTION = $_FIRST_DESC['DetailDescription'];
-
-						//$_THE_DESCRIPTION = str_replace('<CR><CR>', '<br/><br/>', $_THE_DESCRIPTION);
 
 					endif;
 
@@ -2204,18 +2223,54 @@ class WC_Fincon{
 
 			if ($_ID !== 0):
 
-				$_DELETE = wc_get_product($_ID);
-                $_DELETE->delete();
+				$_WHAT_TO_DO_WITH_YOU = wc_get_product($_ID);
 
-                if('trash' === $_DELETE->get_status()):
+				switch($this->_PROD_ACTION):
 
-                	wc_delete_product_transients($_ID);
-                	WC_Fincon_Logger::log('PRODUCT ('.$ItemNo.'): DELETED');
-                	
-                else:
-                	WC_Fincon_Logger::log('PRODUCT ('.$ItemNo.'): DELETE FAILED');
-                	
-                endif;
+					case "draft":
+
+						wp_update_post(
+							array(
+								'ID' => $_ID,
+								'post_status' => 'draft'
+							)
+
+						);
+
+
+						WC_Fincon_Logger::log('FINCON--PRODUCT('.$ItemNo.')::DRAFTED');
+
+					break;
+
+					case "hide":
+
+						$_WHAT_TO_DO_WITH_YOU->set_catalog_visibility('hidden');
+						$_WHAT_TO_DO_WITH_YOU->save();
+
+						WC_Fincon_Logger::log('PRODUCT ('.$ItemNo.'): HIDDEN');
+
+					break;
+
+					case "trash":
+
+
+		                $_WHAT_TO_DO_WITH_YOU->delete();
+
+		                if('trash' === $_WHAT_TO_DO_WITH_YOU->get_status()):
+
+		                	wc_delete_product_transients($_ID);
+		                	WC_Fincon_Logger::log('PRODUCT ('.$ItemNo.'): DELETED');
+		                	
+		                else:
+		                	WC_Fincon_Logger::log('PRODUCT ('.$ItemNo.'): DELETE FAILED');
+		                	
+		                endif;
+
+					break;
+
+				endswitch;
+
+				
 
 			else:
 

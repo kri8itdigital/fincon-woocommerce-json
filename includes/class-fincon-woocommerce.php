@@ -79,7 +79,7 @@ class Fincon_Woocommerce {
 		if ( defined( 'FINCON_WOOCOMMERCE_VERSION' ) ) {
 			$this->version = FINCON_WOOCOMMERCE_VERSION;
 		} else {
-			$this->version = '2.2.6';
+			$this->version = '2.3.0';
 		}
 		$this->plugin_name = 'fincon-woocommerce';
 
@@ -239,6 +239,9 @@ class Fincon_Woocommerce {
 			endif;
 
 		endif;
+
+		$this->loader->add_action( 'wp_ajax_fincon_admin_trigger_product_sync_full', $plugin_admin, 'fincon_admin_trigger_product_sync_full');
+		$this->loader->add_action( 'wp_ajax_nopriv_fincon_admin_trigger_product_sync_full', $plugin_admin, 'fincon_admin_trigger_product_sync_full');
 
 		$this->loader->add_action( 'wp_ajax_fincon_admin_trigger_product_sync', $plugin_admin, 'fincon_admin_trigger_product_sync');
 		$this->loader->add_action( 'wp_ajax_nopriv_fincon_admin_trigger_product_sync', $plugin_admin, 'fincon_admin_trigger_product_sync');
