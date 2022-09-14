@@ -73,7 +73,6 @@ class WC_Fincon{
 
 		$this->_ACC 		= get_option('fincon_woocommerce_account');
 		$this->_SHIP 		= get_option('fincon_woocommerce_delivery');
-		$this->_S_LOC 		= get_option('fincon_woocommerce_stock_location');
 		$this->_O_LOC 		= get_option('fincon_woocommerce_order_location');
 		$this->_S_ITERATE 	= get_option('fincon_woocommerce_product_batch');
 		$this->_U_ITERATE	= get_option('fincon_woocommerce_user_batch');
@@ -117,6 +116,21 @@ class WC_Fincon{
 			$this->_PAYMENTS = true;
 		endif;
 
+		$_SLB = get_option('fincon_woocommerce_stock_location');
+		$_SLB = explode(",", $_SLB);
+		$_SLC = array();
+		foreach($_SLB as $_S):
+
+			if(trim($_S) != ''):
+
+				$_SLC[] = $_S;
+
+			endif;
+
+		endforeach;
+
+		$this->_S_LOC 		= implode(',', $_SLC);
+
 		$this->_DEBUG = $_DEBUG;
 	}
 
@@ -141,6 +155,10 @@ class WC_Fincon{
 			$_URL = trailingslashit($_URL.implode("/", $_DATA));
 		endif;
 
+		if($this->_DEBUG):
+			echo '<pre>'; print_r($_URL); echo '</pre>';
+		endif;
+
 		$_HEADER = array(
 			'Content-Type: application/json'
 		);
@@ -149,8 +167,8 @@ class WC_Fincon{
 
 		curl_setopt($_CALL, CURLOPT_URL,  $_URL);
 		curl_setopt($_CALL, CURLOPT_USERPWD, $this->_AUTH_UN . ":" . $this->_AUTH_PW);
-		curl_setopt($_CALL, CURLOPT_CONNECTTIMEOUT, 10);
-		curl_setopt($_CALL, CURLOPT_TIMEOUT,        10);
+		curl_setopt($_CALL, CURLOPT_CONNECTTIMEOUT, 0);
+		curl_setopt($_CALL, CURLOPT_TIMEOUT,        0);
 		curl_setopt($_CALL, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt($_CALL, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($_CALL, CURLOPT_SSL_VERIFYHOST, false);
@@ -167,6 +185,10 @@ class WC_Fincon{
 		endif;
 
 		$_RESULT = curl_exec($_CALL);
+
+		if($this->_DEBUG):
+			echo '<pre>'; print_r($_RESULT); echo '</pre>';
+		endif;
 
 
 		curl_close($_CALL);
@@ -819,11 +841,14 @@ class WC_Fincon{
 
 				foreach($_STOCKLOCS as $_SL):
 					$_INSTOCK += $_SL['InStock'];
+
+					if($this->_EXCLUDE):
+						$_INSTOCK -= $_SL['SalesOrders'];	
+					endif;
+					
 				endforeach;
 
-				if($this->_EXCLUDE):
-					$_INSTOCK -= $_SL['SalesOrders'];	
-				endif;
+				
 
 				//WC_Fincon_Logger::log('--STOCKQTY::'.$MinItemNo.'('.$_INSTOCK.')');
 				
@@ -2119,22 +2144,7 @@ class WC_Fincon{
 			endif;
 
 
-			$_LOCATIONS = str_replace(" ", "", $_FLOC);
-			$_LOCATIONS = explode(",", $_LOCATIONS);
-
-			$_STOCKQTY = 0;
-
-			foreach($_LOCATIONS as $_LOCATION):
-
-				$_THIS_STOCK = $_PRODUCT['StockLoc'][intval($_LOCATION)]['InStock'];
-
-				if($this->_EXCLUDE):
-					$_THIS_STOCK -= $_PRODUCT['StockLoc'][intval($_LOCATION)]['SalesOrders'];
-				endif;
-
-				$_STOCKQTY += $_THIS_STOCK;
-
-			endforeach;	
+			$_STOCKQTY = $this->GetStockQuantity($ItemNo);
 			
 			$_PROD->set_stock_quantity($_STOCKQTY);
 

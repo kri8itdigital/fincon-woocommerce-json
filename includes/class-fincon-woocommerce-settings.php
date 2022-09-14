@@ -621,22 +621,24 @@ class fincon_woocommerce_settings extends WC_Settings_Page {
 
 					endif;
 
-					else:
+				else:
 
-						$_POST['fincon_woocommerce_sync_stock'] = 0;
-						$_POST['fincon_woocommerce_validate_add'] = 0;
-						$_POST['fincon_woocommerce_validate_checkout'] = 0;
-						$_POST['fincon_woocommerce_exclude_order'] = 0;
-						$_POST['fincon_woocommerce_delivery'] 	= '';
-						$_POST['fincon_woocommerce_coupon'] 	= '';
+					$_POST['fincon_woocommerce_sync_stock'] = 0;
+					$_POST['fincon_woocommerce_validate_add'] = 0;
+					$_POST['fincon_woocommerce_validate_checkout'] = 0;
+					$_POST['fincon_woocommerce_exclude_order'] = 0;
+					$_POST['fincon_woocommerce_delivery'] 	= '';
+					$_POST['fincon_woocommerce_coupon'] 	= '';
 
-						delete_option('fincon_woocommerce_last_product_update');
-						delete_option('fincon_woocommerce_product_sync_running');
-						delete_option('fincon_woocommerce_do_inital_product_sync');
-						delete_option('fincon_woocommerce_do_inital_product_sync_date');
+					delete_option('fincon_woocommerce_last_product_update');
+					delete_option('fincon_woocommerce_product_sync_running');
+					delete_option('fincon_woocommerce_do_inital_product_sync');
+					delete_option('fincon_woocommerce_do_inital_product_sync_date');
+					delete_option('fincon_woocommerce_product_sync_last_date');
+					delete_option('fincon_woocommerce_product_sync_last_time');
 
 
-						WC_Admin_Settings::add_error('Cannot save Product settings - please ensure Fincon is correctly enabled first.');
+					WC_Admin_Settings::add_error('Cannot save Product settings - please ensure Fincon is correctly enabled first.');
 				endif;
 
 			break;

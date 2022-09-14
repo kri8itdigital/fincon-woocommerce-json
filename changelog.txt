@@ -1,3 +1,7 @@
+= 2.3.1 - September 14, 2022 = 
+* Fix Release - Makes sure that any trailing comma's in the stock location field are ignored.
+* Fix Release - Stock location matching move away from array key.
+
 = 2.3.0 - July 25, 2022 = 
 * Feature Release - Add options for handling a product that is no longer available.
 
