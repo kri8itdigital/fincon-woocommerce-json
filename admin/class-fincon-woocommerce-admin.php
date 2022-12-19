@@ -313,6 +313,24 @@ class Fincon_Woocommerce_Admin {
 
 	
 	/**
+	 * Increase HTTP Timeouts
+	 *
+	 * @since    2.3.2
+	 */
+	public function http_request_timeout(){
+		return 10000;
+	}
+
+
+
+
+
+
+
+
+
+	
+	/**
 	 * Add Columns to shop order table for the Fincon Sales Order Number
 	 *
 	 * @since    1.0.0

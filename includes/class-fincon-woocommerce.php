@@ -79,7 +79,7 @@ class Fincon_Woocommerce {
 		if ( defined( 'FINCON_WOOCOMMERCE_VERSION' ) ) {
 			$this->version = FINCON_WOOCOMMERCE_VERSION;
 		} else {
-			$this->version = '2.3.1';
+			$this->version = '2.4.0';
 		}
 		$this->plugin_name = 'fincon-woocommerce';
 
@@ -213,6 +213,8 @@ class Fincon_Woocommerce {
 		$this->loader->add_action( 'init', $plugin_admin, 'setup_cron_schedules', 999);
 		
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'admin_menu', 999);
+
+		$this->loader->add_filter( 'http_request_timeout', $plugin_admin, 'http_request_timeout');
 
 		$this->loader->add_action( 'woocommerce_default_address_fields', $plugin_admin, 'woocommerce_default_address_fields', 999);
 

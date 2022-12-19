@@ -1,3 +1,6 @@
+= 2.4.0 - December 12, 2022 = 
+* Fix Release - Stock Quantity updates not passing correct MaxItemNo
+
 = 2.3.1 - September 14, 2022 = 
 * Fix Release - Makes sure that any trailing comma's in the stock location field are ignored.
 * Fix Release - Stock location matching move away from array key.

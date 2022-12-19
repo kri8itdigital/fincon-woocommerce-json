@@ -186,14 +186,16 @@ class WC_Fincon{
 
 		$_RESULT = curl_exec($_CALL);
 
-		if($this->_DEBUG):
-			echo '<pre>'; print_r($_RESULT); echo '</pre>';
-		endif;
+
 
 
 		curl_close($_CALL);
 
 		$_RESULT = json_decode($_RESULT,true);
+
+				if($this->_DEBUG):
+			echo '<pre>'; print_r($_RESULT); echo '</pre>';
+		endif;
 
 		return $_RESULT['result'][0];
 
@@ -650,13 +652,8 @@ class WC_Fincon{
 				$MaxItemNo = $MinItemNo;
 			endif;
 
-			if(strstr($MinItemNo, "/") || strstr($MinItemNo, "\"")):
-				$MinItemNo = rawurlencode($MinItemNo);
-			endif;
-
-			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
-				$MaxItemNo = rawurlencode($MaxItemNo);
-			endif;
+			$MinItemNo = rawurlencode($MinItemNo);
+			$MaxItemNo = rawurlencode($MaxItemNo);
 
 			if($LocNo == ''):
 				$LocNo = $this->_S_LOC;
@@ -724,13 +721,8 @@ class WC_Fincon{
 				$MaxItemNo = $MinItemNo;
 			endif;
 
-			if(strstr($MinItemNo, "/") || strstr($MinItemNo, "\"")):
-				$MinItemNo = rawurlencode($MinItemNo);
-			endif;
-
-			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
-				$MaxItemNo = rawurlencode($MaxItemNo);
-			endif;
+			$MinItemNo = rawurlencode($MinItemNo);
+			$MaxItemNo = rawurlencode($MaxItemNo);
 
 			if($LocNo == ''):
 				$LocNo = $this->_S_LOC;
@@ -783,7 +775,7 @@ class WC_Fincon{
 	/*
 	
 	 */
-	public function GetStockQuantity($MinItemNo, $LocNo = null, $WebOnly = false, $SkipIfZero = true, $RecNo = 0, $Count = 1, $MaxItemNo = ''){
+	public function GetStockQuantity($MinItemNo, $LocNo = null, $WebOnly = false, $SkipIfZero = false, $RecNo = 0, $Count = 1, $MaxItemNo = null){
 
 		$this->Login();
 
@@ -807,13 +799,13 @@ class WC_Fincon{
 
 			$LocNo = implode(",", $_THE_LOCS);
 
-			if(strstr($MinItemNo, "/") || strstr($MinItemNo, "\"")):
-				$MinItemNo = rawurlencode($MinItemNo);
+			if(!$MaxItemNo):
+				$MaxItemNo = $MinItemNo;
 			endif;
 
-			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
-				$MaxItemNo = rawurlencode($MaxItemNo);
-			endif;
+			$MinItemNo = rawurlencode($MinItemNo);
+			$MaxItemNo = rawurlencode($MaxItemNo);
+
 
 			$_DATA = array(
 				$this->_ID,
@@ -847,10 +839,6 @@ class WC_Fincon{
 					endif;
 					
 				endforeach;
-
-				
-
-				//WC_Fincon_Logger::log('--STOCKQTY::'.$MinItemNo.'('.$_INSTOCK.')');
 				
 				return $_INSTOCK;
 
@@ -968,13 +956,9 @@ class WC_Fincon{
 				$MaxItemNo = $MinItemNo;
 			endif;
 
-			if(strstr($MinItemNo, "/") || strstr($MinItemNo, "\"")):
-				$MinItemNo = rawurlencode($MinItemNo);
-			endif;
+			$MinItemNo = rawurlencode($MinItemNo);
+			$MaxItemNo = rawurlencode($MaxItemNo);
 
-			if(strstr($MaxItemNo, "/") || strstr($MaxItemNo, "\"")):
-				$MaxItemNo = rawurlencode($MaxItemNo);
-			endif;
 
 			$_DATA = array(
 				$this->_ID,
@@ -1027,6 +1011,13 @@ class WC_Fincon{
 		if($this->_ID):
 
 			$_ENDPOINT = 'GetStockPictures';
+
+			if(!$MaxItemNo):
+				$MaxItemNo = $MinItemNo;
+			endif;
+
+			$MinItemNo = rawurlencode($MinItemNo);
+			$MaxItemNo = rawurlencode($MaxItemNo);
 
 			$_DATA = array(
 				$this->_ID,
@@ -1848,9 +1839,6 @@ class WC_Fincon{
 
 
 	public function run_product_sync($ISCRON = false){
-
-		set_time_limit(0);
-		@ini_set('max_execution_time',0);
 
 		$_TYPE = 'full';
 

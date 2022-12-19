@@ -16,7 +16,7 @@
  * Plugin Name:       Fincon For Woocommerce
  * Plugin URI:        https://github.com/kri8itdigital/fincon-woocommerce-json
  * Description:       Connects your Fincon accounting system JSON API to Woocommerce.
- * Version:           2.3.1
+ * Version:           2.4.0
  * Author:            Hilton Moore
  * Author URI:        https://www.kri8it.com
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'FINCON_WOOCOMMERCE_VERSION', '2.3.1' );
+define( 'FINCON_WOOCOMMERCE_VERSION', '2.4.0' );
 define( 'FINCON_WOOCOMMERCE_CRON_BASE', str_replace("fincon-woocommerce-json.php", "cron.php", trailingslashit(get_site_url()).'wp-content/plugins/'.plugin_basename(__FILE__)));
 
 /**
@@ -83,9 +83,9 @@ function fincon_woocommerce_check_for_update(){
 	        'homepage'           => 'https://github.com/kri8itdigital/fincon-woocommerce-json',
 	        'sslverify'          => true,
 	        'requires'           => '5.0',
-	        'tested'             => '6.0.1',
+	        'tested'             => '6.1.1',
 	        'readme'             => 'README.md',
-	        'version'			 => '2.3.1'
+	        'version'			 => '2.4.0'
 	    );
 
 	    new fincon_updater( $config );
