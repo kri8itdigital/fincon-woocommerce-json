@@ -1,3 +1,6 @@
+= 2.4.1 - June 12, 2023 = 
+* Update Release - Allow updating of Product Title (Description) from Fincon. Settings included.
+
 = 2.4.0 - December 12, 2022 = 
 * Fix Release - Stock Quantity updates not passing correct MaxItemNo
 

@@ -289,6 +289,18 @@ class fincon_woocommerce_settings extends WC_Settings_Page {
 						'id' 			=> 'fincon_woocommerce_price',
 					),
 					array (
+							'title' 	=> __('Product Titles', 'fincon-woocommerce'),
+							'desc' 		=> __('Update Product Titles with syncs', 'fincon-woocommerce' ),
+							'type' 		=> 'select',
+							'default' 	=> '',
+							'id' 		=> 'fincon_woocommerce_product_title',
+							'default' 	=> 'update',
+							'options'   => array(
+								'no'		=> __( 'No - do not update them', 'fincon-woocommerce' ),
+								'update'	=> __( 'Yes - overwrite the local titles', 'fincon-woocommerce' )
+							)
+					),
+					array (
 							'title' 	=> __('Product Descriptions', 'fincon-woocommerce'),
 							'desc' 		=> __('Sync Detailed Description with your product content field', 'fincon-woocommerce' ),
 							'type' 		=> 'select',

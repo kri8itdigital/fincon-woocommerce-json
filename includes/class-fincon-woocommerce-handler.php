@@ -38,6 +38,7 @@ class WC_Fincon{
 
 	var $_ORDER_STATUS = false;
 
+	var $_TITLES = false;
 	var $_DETAILED = false;
 
 	var $_ERR 		= '';
@@ -82,6 +83,7 @@ class WC_Fincon{
 		$this->_PROD_ACTION = get_option('fincon_woocommerce_product_action');
 		$this->_DECIMAL		= wc_get_price_decimals();
 
+		$this->_TITLES  	= get_option('fincon_woocommerce_product_title');
 		$this->_DETAILED  	= get_option('fincon_woocommerce_product_detailed');
 
 		if(get_option('fincon_woocommerce_sync_product_images') == 'yes'):
@@ -2007,9 +2009,9 @@ class WC_Fincon{
 
 			endif;
 
-			if($_NEW):
+			if($_NEW):	
 
-				$_PROD->set_name($Description);
+				$_PROD->set_name($Description);			
 
 				$_PROD->set_status($_STATUS); 
 
@@ -2041,7 +2043,12 @@ class WC_Fincon{
 				) );
 			endif;
 
+
 			$_PROD->set_catalog_visibility('visible');
+
+			if($this->_TITLES && !$_NEW):
+				$_PROD->set_name($Description);
+			endif;
 
 			if(($this->_DETAILED == 'create' && $_NEW) || $this->_DETAILED == 'update'):
 
