@@ -294,7 +294,7 @@ class fincon_woocommerce_settings extends WC_Settings_Page {
 							'type' 		=> 'select',
 							'default' 	=> '',
 							'id' 		=> 'fincon_woocommerce_product_title',
-							'default' 	=> 'update',
+							'default' 	=> 'no',
 							'options'   => array(
 								'no'		=> __( 'No - do not update them', 'fincon-woocommerce' ),
 								'update'	=> __( 'Yes - overwrite the local titles', 'fincon-woocommerce' )
