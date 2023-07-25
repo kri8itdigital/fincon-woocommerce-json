@@ -1345,6 +1345,8 @@ class WC_Fincon{
 
 		endif;
 
+		$_ACC_TO_USE = apply_filters('fincon_filter_account_number_for_salesorder', $_ACC_TO_USE, $_ORDER->get_customer_id());
+
 		$_DEP = $this->GetDebAccount($_ACC_TO_USE);
 
 		if(!$_DEP):
@@ -1616,6 +1618,21 @@ class WC_Fincon{
 						
 							endif;
 						endif;
+
+					else:
+
+						if(count($this->_ERRORS) > 0):
+							update_post_meta($_ORDER_ID, '_fincon_sales_error', $this->_ERRORS);
+
+							foreach($this->_ERRORS as $_ERROR):
+
+								WC_Fincon_Logger::log('SALES ORDER ERROR ('.$_ORDER_ID.')::'.$_ERROR);
+
+							endforeach;
+
+						endif;
+
+
 
 					endif;
 

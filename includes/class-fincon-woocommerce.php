@@ -79,7 +79,7 @@ class Fincon_Woocommerce {
 		if ( defined( 'FINCON_WOOCOMMERCE_VERSION' ) ) {
 			$this->version = FINCON_WOOCOMMERCE_VERSION;
 		} else {
-			$this->version = '2.4.1';
+			$this->version = '2.4.2';
 		}
 		$this->plugin_name = 'fincon-woocommerce';
 
