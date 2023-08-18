@@ -82,9 +82,11 @@ class WC_Fincon{
 		$this->_PROD_STATUS = get_option('fincon_woocommerce_product_status');
 		$this->_PROD_ACTION = get_option('fincon_woocommerce_product_action');
 		$this->_DECIMAL		= wc_get_price_decimals();
-
-		$this->_TITLES  	= get_option('fincon_woocommerce_product_title');
 		$this->_DETAILED  	= get_option('fincon_woocommerce_product_detailed');
+
+		if(get_option('fincon_woocommerce_product_title') == 'yes'):
+			$this->_TITLES = true;
+		endif;
 
 		if(get_option('fincon_woocommerce_sync_product_images') == 'yes'):
 			$this->_SYNC_IMAGES = true;

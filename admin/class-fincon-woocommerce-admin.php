@@ -991,7 +991,7 @@ class Fincon_Woocommerce_Admin {
 
 		$DOWORK = $ISCRON;
 
-		if(!get_option('fincon_product_sync_running') || get_option('fincon_product_sync_running') == 'no'):
+		if(!get_option('fincon_woocommerce_product_sync_running') || get_option('fincon_woocommerce_product_sync_running') == 'no'):
 			$DOWORK = true;
 		endif;
 
@@ -1031,7 +1031,7 @@ class Fincon_Woocommerce_Admin {
 
 		$DOWORK = $ISCRON;
 
-		if(!get_option('fincon_user_sync_running') || get_option('fincon_user_sync_running') == 'no'):
+		if(!get_option('fincon_woocommerce_user_sync_running') || get_option('fincon_woocommerce_user_sync_running') == 'no'):
 			$DOWORK = true;
 		endif;
 
@@ -1070,8 +1070,6 @@ class Fincon_Woocommerce_Admin {
 	 * @since    1.2.0
 	 */
 	public static function fincon_admin_trigger_product_sync_full(){
-
-
 
 		if(!get_option('fincon_woocommerce_product_sync_running') || get_option('fincon_woocommerce_product_sync_running') == 'no'):
 
