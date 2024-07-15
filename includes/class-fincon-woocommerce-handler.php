@@ -152,56 +152,58 @@ class WC_Fincon{
 	 */
 	public function invoke_fincon($_ENDPOINT, $_DATA = array(), $_POSTING = NULL, $_DO_ENCODE = true){
 
-		$_URL = trailingslashit($this->_URL);
-		$_URL = trailingslashit($_URL.$_ENDPOINT);
+		$_FINCON_URL = trailingslashit($this->_URL);
+		$_FINCON_URL = trailingslashit($_FINCON_URL.$_ENDPOINT);
 
 		if(count($_DATA) > 0):
-			$_URL = trailingslashit($_URL.implode("/", $_DATA));
+			$_FINCON_URL = trailingslashit($_FINCON_URL.implode("/", $_DATA));
 		endif;
 
 		if($this->_DEBUG):
-			echo '<pre>'; print_r($_URL); echo '</pre>';
+			echo '<pre>'; print_r($_FINCON_URL); echo '</pre>';
 		endif;
 
-		$_HEADER = array(
-			'Content-Type: application/json'
+		$_FINCON_PAYLOAD = array(
+			'method'  => 'GET',
+			'timeout'     => 30,
+    		'sslverify' => false,
+		    'headers' => array(
+		        'Authorization' => 'Basic ' . base64_encode( $this->_AUTH_UN . ':' . $this->_AUTH_PW ),
+		        'Content-Type: application/json'
+		    )
 		);
 
-		$_CALL = curl_init();
-
-		curl_setopt($_CALL, CURLOPT_URL,  $_URL);
-		curl_setopt($_CALL, CURLOPT_USERPWD, $this->_AUTH_UN . ":" . $this->_AUTH_PW);
-		curl_setopt($_CALL, CURLOPT_CONNECTTIMEOUT, 0);
-		curl_setopt($_CALL, CURLOPT_TIMEOUT,        0);
-		curl_setopt($_CALL, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt($_CALL, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($_CALL, CURLOPT_SSL_VERIFYHOST, false);
-		curl_setopt($_CALL, CURLOPT_HTTPHEADER,     $_HEADER);
-
 		if($_POSTING):
-			curl_setopt($_CALL, CURLOPT_POST, 1);
+
+			$_FINCON_PAYLOAD['method'] = 'POST';
 
 			if($_DO_ENCODE):
-				curl_setopt($_CALL, CURLOPT_POSTFIELDS, json_encode($_POSTING, JSON_NUMERIC_CHECK));
+				$_FINCON_PAYLOAD['body'] =  json_encode($_POSTING, JSON_NUMERIC_CHECK);
 			else:
-				curl_setopt($_CALL, CURLOPT_POSTFIELDS, $_POSTING);
+				$_FINCON_PAYLOAD['body'] =  $_POSTING;
 			endif;
+
 		endif;
 
-		$_RESULT = curl_exec($_CALL);
+		$_RESPONSE = wp_remote_post( $_FINCON_URL, $_FINCON_PAYLOAD );
 
-
-
-
-		curl_close($_CALL);
-
-		$_RESULT = json_decode($_RESULT,true);
-
-				if($this->_DEBUG):
-			echo '<pre>'; print_r($_RESULT); echo '</pre>';
+		if($this->_DEBUG):
+			echo '<pre>'; print_r($_RESPONSE); echo '</pre>';
 		endif;
 
-		return $_RESULT['result'][0];
+		if ( is_wp_error( $_RESPONSE ) ):
+
+			$this->_ERRORS = $_RESPONSE->get_error_messages();
+
+			return false;
+
+		else:
+
+			$_ENDPOINT_DATA = json_decode(wp_remote_retrieve_body( $_RESPONSE ), true); 
+
+			return $_ENDPOINT_DATA['result'][0];
+
+		endif;
 
 
 	}
@@ -523,15 +525,17 @@ class WC_Fincon{
 
 			$_RESULT = curl_exec($_CALL);
 
+			curl_close($_CALL);
+
 			$_RESULT = json_decode($_RESULT,true);
 
 			$_RESPONSE = $_RESULT['result'][0];
 
 			if(!$_RESPONSE['Disconnected']):
 
-			$_SUCCESS = false;
+				$_SUCCESS = false;
 
-			$_ERROR = $_RESPONSE['ErrorInfo'];
+				$_ERROR = $_RESPONSE['ErrorInfo'];
 
 			endif;
 
@@ -640,7 +644,7 @@ class WC_Fincon{
 	/*
 	
 	 */
-	public function GetStock($RecNo = 0, $Count = null, $MinItemNo = '', $MaxItemNo = null, $LocNo = '', $WebOnly = true){
+	public function GetStock($RecNo = 0, $Count = null, $MinItemNo = '', $MaxItemNo = null, $LocNo = '', $WebOnly = false){
 
 		$this->Login();
 
@@ -660,7 +664,7 @@ class WC_Fincon{
 			$MaxItemNo = rawurlencode($MaxItemNo);
 
 			if($LocNo == ''):
-				$LocNo = $this->_S_LOC;
+				//$LocNo = $this->_S_LOC;
 			endif;
 
 			$_DATA = array(
@@ -1409,8 +1413,8 @@ class WC_Fincon{
 
 			$_SALES_ORDER['AccNo'] 				= $_ACC_TO_USE;
 			$_SALES_ORDER['LocNo'] 				= $this->_O_LOC;
-			$_SALES_ORDER['TotalExcl']			= number_format($_ORDER->get_total() - $_ORDER->get_total_tax(), $this->_DECIMAL, ".", "");
-			$_SALES_ORDER['TotalTax']			= number_format($_ORDER->get_total_tax(), $this->_DECIMAL, ".", "");
+			$_SALES_ORDER['TotalExcl']			= number_format($_ORDER->get_total() - $_ORDER->get_total_tax(), $_DECIMAL, ".", "");
+			$_SALES_ORDER['TotalTax']			= number_format($_ORDER->get_total_tax(), $_DECIMAL, ".", "");
 			$_SALES_ORDER['CustomerRef'] 		= $_ORDER_ID;
 
 
@@ -1496,7 +1500,7 @@ class WC_Fincon{
 				/* IF ITEM IS SHIPPED */
 				if($_THIS_METHOD == 'R'):
 
-					$_SHIPPING_ITEM = $this->GetStock(0, 1, $this->_SHIP);
+					$_SHIPPING_ITEM = $this->GetStock(0, 1, $this->_SHIP, $this->_SHIP, '', false);
 
 					if($_SHIPPING_ITEM && $_SHIPPING_ITEM['ItemNo'] != ''):
 
@@ -1504,7 +1508,7 @@ class WC_Fincon{
 
 						$_DETAIL['ItemNo']  		= $this->_SHIP;
 						$_DETAIL['Quantity'] 		= 1;
-						$_DETAIL['LineTotalExcl'] 	= number_format($_ORDER->get_shipping_total() - $_ORDER->get_shipping_tax(), $_DECIMAL, ".", "");
+						$_DETAIL['LineTotalExcl'] 	= number_format($_ORDER->get_shipping_total(), $_DECIMAL, ".", "");
 						$_DETAIL['TaxCode'] 		= $_SHIPPING_ITEM['TaxCode'];
 						$_DETAIL['LineTotalTax'] 	= number_format($_ORDER->get_shipping_tax(), $_DECIMAL, ".", "");
 						$_DETAIL['Description'] 	= $_SHIPPING_ITEM['Description'].'-'.$_ORDER->get_shipping_method();
@@ -1525,7 +1529,7 @@ class WC_Fincon{
 
 				foreach ( $_COUPONS as $_ID => $_ITEM ):
 
-					$_COUPON_ITEM = $this->GetStock(0, 1, $this->_COUPON);
+					$_COUPON_ITEM = $this->GetStock(0, 1, $this->_COUPON, $this->_COUPON, '', false);
 
 					if($_COUPON_ITEM && $_COUPON_ITEM['ItemNo'] != ''):
 
@@ -1884,6 +1888,14 @@ class WC_Fincon{
 
 		update_option('fincon_woocommerce_product_sync_running', 'yes');
 
+		if(!get_option('fincon_woocommerce_product_sync_running_start_date')):
+			update_option('fincon_woocommerce_product_sync_running_start_date', wp_date('Y-m-d'));
+		endif;
+
+		if(!get_option('fincon_woocommerce_product_sync_running_start_time')):
+			update_option('fincon_woocommerce_product_sync_running_start_time', wp_date('H:i'));
+		endif;
+
 		$this->Login();
 
 
@@ -1949,8 +1961,24 @@ class WC_Fincon{
 		if($_REC_NO == 0 || $_COUNT < $this->_S_ITERATE):
 
 			delete_option('fincon_woocommerce_product_sync_rec_no', $_REC_NO);
-			update_option('fincon_woocommerce_product_sync_last_date', wp_date('Y-m-d'));
-			update_option('fincon_woocommerce_product_sync_last_time', wp_date('H:i'));
+
+			if(get_option('fincon_woocommerce_product_sync_running_start_date')):
+				$_START_DATE = get_option('fincon_woocommerce_product_sync_running_start_date');
+				update_option('fincon_woocommerce_product_sync_last_date', $_START_DATE);
+			else:
+				update_option('fincon_woocommerce_product_sync_last_date', wp_date('Y-m-d'));
+			endif;
+
+			if(get_option('fincon_woocommerce_product_sync_running_start_time')):
+				$_START_TIME = get_option('fincon_woocommerce_product_sync_running_start_time');
+				update_option('fincon_woocommerce_product_sync_last_time', $_START_TIME);
+			else:
+				update_option('fincon_woocommerce_product_sync_last_time', wp_date('H:i'));
+
+			endif;
+
+			delete_option('fincon_woocommerce_product_sync_running_start_date');
+			delete_option('fincon_woocommerce_product_sync_running_start_time');
 
 			update_option('fincon_woocommerce_product_sync_count', '0');
 
@@ -1961,6 +1989,7 @@ class WC_Fincon{
 			endif;
 
 			WC_Fincon_Logger::log('PRODUCT SYNC FINISHED');	
+
 
 
 		else:
@@ -2348,6 +2377,14 @@ class WC_Fincon{
 
 		update_option('fincon_woocommerce_user_sync_running', 'yes');
 
+		if(!get_option('fincon_woocommerce_user_sync_running_start_date')):
+			update_option('fincon_woocommerce_user_sync_running_start_date', wp_date('Y-m-d'));
+		endif;
+
+		if(!get_option('fincon_woocommerce_user_sync_running_start_time')):
+			update_option('fincon_woocommerce_user_sync_running_start_time', wp_date('H:i'));
+		endif;
+
 		$this->Login();
 
 		switch($_TYPE):
@@ -2410,9 +2447,24 @@ class WC_Fincon{
 		if($_REC_NO == 0 || $_COUNT < $this->_U_ITERATE):
 
 			delete_option('fincon_woocommerce_user_sync_rec_no', $_REC_NO);
-			update_option('fincon_woocommerce_user_sync_last_date', wp_date('Y-m-d'));
-			update_option('fincon_woocommerce_user_sync_last_time', wp_date('H:i'));
 			
+			if(get_option('fincon_woocommerce_user_sync_running_start_date')):
+				$_START_DATE = get_option('fincon_woocommerce_user_sync_running_start_date');
+				update_option('fincon_woocommerce_user_sync_last_date', $_START_DATE);
+			else:
+				update_option('fincon_woocommerce_user_sync_last_date', wp_date('Y-m-d'));
+			endif;
+
+			if(get_option('fincon_woocommerce_user_sync_running_start_time')):
+				$_START_TIME = get_option('fincon_woocommerce_user_sync_running_start_time');
+				update_option('fincon_woocommerce_user_sync_last_time', $_START_TIME);
+			else:					
+				update_option('fincon_woocommerce_user_sync_last_time', wp_date('H:i'));
+			endif;
+
+			delete_option('fincon_woocommerce_user_sync_running_start_date');
+			delete_option('fincon_woocommerce_user_sync_running_start_time');
+
 			update_option('fincon_woocommerce_user_sync_count', '0');
 
 			update_option('fincon_woocommerce_user_sync_errors', array());

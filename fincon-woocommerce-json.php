@@ -16,7 +16,7 @@
  * Plugin Name:       Fincon For Woocommerce
  * Plugin URI:        https://github.com/kri8itdigital/fincon-woocommerce-json
  * Description:       Connects your Fincon accounting system JSON API to Woocommerce.
- * Version:           2.4.3
+ * Version:           2.5
  * Author:            Hilton Moore
  * Author URI:        https://www.kri8it.com
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'FINCON_WOOCOMMERCE_VERSION', '2.4.3' );
+define( 'FINCON_WOOCOMMERCE_VERSION', '2.5' );
 define( 'FINCON_WOOCOMMERCE_CRON_BASE', str_replace("fincon-woocommerce-json.php", "cron.php", trailingslashit(get_site_url()).'wp-content/plugins/'.plugin_basename(__FILE__)));
 
 /**
@@ -70,25 +70,22 @@ add_action( 'plugins_loaded', 'fincon_woocommerce_check_for_update' );
 add_action( 'plugins_loaded', 'fincon_woocommerce_setup_php_debugging' );
 function fincon_woocommerce_check_for_update(){
 
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-fincon-woocommerce-updater.php';
+  require_once plugin_dir_path( __FILE__ ) . 'includes/class-fincon-woocommerce-updater.php';
+  $config = array(
+        'slug'               => plugin_basename( __FILE__ ),
+        'api_url'            => 'https://api.github.com/repos/kri8itdigital/fincon-woocommerce-json',
+        'raw_url'            => 'https://raw.github.com/kri8itdigital/fincon-woocommerce-json/master',
+        'github_url'         => 'https://github.com/kri8itdigital/fincon-woocommerce-json',
+        'zip_url'            => 'https://github.com/kri8itdigital/fincon-woocommerce-json/archive/master.zip',
+        'homepage'           => 'https://github.com/kri8itdigital/fincon-woocommerce-json',
+        'sslverify'          => true,
+        'requires'           => '5.0',
+        'tested'             => '6.3',
+        'readme'             => 'README.md',
+        'version'			 => '2.5'
+    );
 
-
-	  $config = array(
-	        'slug'               => plugin_basename( __FILE__ ),
-	        'proper_folder_name' => 'fincon-woocommerce-json',
-	        'api_url'            => 'https://api.github.com/repos/kri8itdigital/fincon-woocommerce-json',
-	        'raw_url'            => 'https://raw.github.com/kri8itdigital/fincon-woocommerce-json/master',
-	        'github_url'         => 'https://github.com/kri8itdigital/fincon-woocommerce-json',
-	        'zip_url'            => 'https://github.com/kri8itdigital/fincon-woocommerce-json/archive/master.zip',
-	        'homepage'           => 'https://github.com/kri8itdigital/fincon-woocommerce-json',
-	        'sslverify'          => true,
-	        'requires'           => '5.0',
-	        'tested'             => '6.3',
-	        'readme'             => 'README.md',
-	        'version'			 => '2.4.3'
-	    );
-
-	    new fincon_updater( $config );
+    new fincon_updater( $config );
 
 }
 

@@ -234,7 +234,7 @@ class fincon_updater
 
         if ( $this->overrule_transients() || ( !isset( $version ) || !$version || '' == $version ) ) {
 
-            $raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['proper_folder_name'] ).'.php' );
+            $raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ).'.php' );
 
             if ( is_wp_error( $raw_response ) ) {
                 $version = false;
@@ -417,7 +417,7 @@ class fincon_updater
         if ( 1 === $update ) {
             $response              = new stdClass;
             $response->new_version = $this->config['new_version'];
-            $response->slug        = $this->config['proper_folder_name'];
+            $response->slug        = $this->config['slug'];
             $response->url         = add_query_arg( array( 'access_token' => $this->config['access_token'] ), $this->config['github_url'] );
             $response->package     = $this->config['zip_url'];
 
@@ -444,7 +444,7 @@ class fincon_updater
     {
 
         // Check if this call API is for the right plugin
-        if ( !isset( $response->slug ) || $response->slug != $this->config['proper_folder_name'] ) {
+        if ( !isset( $response->slug ) || $response->slug != $this->config['slug'] ) {
             return false;
         }
 
@@ -483,7 +483,7 @@ class fincon_updater
         global $wp_filesystem;
 
         // Move & Activate
-        $proper_destination = WP_PLUGIN_DIR . '/' . $this->config['proper_folder_name'];
+        $proper_destination = WP_PLUGIN_DIR . '/' . $this->config['slug'];
         $wp_filesystem->move( $result['destination'], $proper_destination );
         $result['destination'] = $proper_destination;
         $activate              = activate_plugin( WP_PLUGIN_DIR . '/' . $this->config['slug'] );

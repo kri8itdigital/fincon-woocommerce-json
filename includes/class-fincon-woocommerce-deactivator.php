@@ -53,6 +53,8 @@ class Fincon_Woocommerce_Deactivator {
 		delete_option('fincon_woocommerce_product_sync_last_date');
 		delete_option('fincon_woocommerce_product_sync_last_time');
 		delete_option('fincon_woocommerce_product_sync_running');
+		delete_option('fincon_woocommerce_product_sync_running_start_date');
+		delete_option('fincon_woocommerce_product_sync_running_start_time');
 
 		/* CRON FOR SYNCING USERS */
 		wp_clear_scheduled_hook('fincon_woocommerce_sync_accounts');
@@ -64,6 +66,8 @@ class Fincon_Woocommerce_Deactivator {
 		delete_option('fincon_woocommerce_user_sync_last_date');
 		delete_option('fincon_woocommerce_user_sync_last_time');
 		delete_option('fincon_woocommerce_user_sync_running');
+		delete_option('fincon_woocommerce_user_sync_running_start_date');
+		delete_option('fincon_woocommerce_user_sync_running_start_time');
 
 		/* CRON FOR LOG CLEANING */
 		wp_clear_scheduled_hook('fincon_woocommerce_clean_logs');

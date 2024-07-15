@@ -1,6 +1,12 @@
+= 2.5 - April 23, 2024 = 
+* Fix Release - Amend GetStock to be webonly = false for DELIVERY and COUPON.
+* Fix Release - Changes to shipping values and tax not calculating correctly.
+* Update Release - Efficiency improvements added to product and user sync.
+* Update Release - Update to Github updater when locating files locally.
+
 = 2.4.3 - August 18, 2023 = 
 * Fix Release - Corrected Flags for when CRON is running.
-* Fix Release - Correct Product Title Flag for sync updating
+* Fix Release - Correct Product Title Flag for sync updating.
 
 = 2.4.2 - July 25, 2023 = 
 * Update Release - Added Filter for Account Number at Sales Order Creation (fincon_filter_account_number_for_salesorder) - receives 2 variables. The ACC number that will currently be used and the Customer ID from the Order object. This will be 0 for guest. Return Acc Number (must exist in Fincon).
