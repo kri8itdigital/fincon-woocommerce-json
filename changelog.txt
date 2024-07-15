@@ -1,4 +1,4 @@
-= 2.5 - April 23, 2024 = 
+= 2.5 - July 15, 2024 = 
 * Fix Release - Amend GetStock to be webonly = false for DELIVERY and COUPON.
 * Fix Release - Changes to shipping values and tax not calculating correctly.
 * Update Release - Efficiency improvements added to product and user sync.
