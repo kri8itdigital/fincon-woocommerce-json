@@ -1807,31 +1807,27 @@ class WC_Fincon{
 	 */
 	public function mime_extension($SKU, $DATA){
 
-	    $image_data       	= base64_decode($DATA);
-
-	    $file_info = finfo_open();
-
-		$mime_type = finfo_buffer($file_info, $image_data, FILEINFO_MIME_TYPE);
-
-		finfo_close($file_info);
-
-		$mimes = get_allowed_mime_types();
-
 		$the_extension = false;
+		$mime_type = false;
 
-		foreach ( $mimes as $ext => $mime ):
+		$_MIMES = array(
+		  "iVBORw0KGgo" => "image/png",
+		  "/9j/" => "image/jpg"
+		);
 
-		   if($mime == $mime_type):
+		foreach($_MIMES as $_STRING => $_MIME):
 
-		   	$_extensions = explode("|", $ext);
+			if(str_starts_with( $DATA, $_STRING)):
 
-		   	$the_extension = $_extensions[0];
+				$mime_type = $_MIME;	
+				$the_extension = explode("/", $mime_type);
+				$the_extension = $the_extension[1];
 
-		   endif;
+			endif;
 
 		endforeach;
 
-		if($the_extension):
+		if($the_extension && $mime_type):
 
 			return array('mime'=> $mime_type, 'ext' => $the_extension);
 

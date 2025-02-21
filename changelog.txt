@@ -1,3 +1,6 @@
+= 2.6 - February 11, 2025 = 
+* Fix Release - Work around for hosting where finfo is not available - move to base64 pattern recognition.
+
 = 2.5 - July 15, 2024 = 
 * Fix Release - Amend GetStock to be webonly = false for DELIVERY and COUPON.
 * Fix Release - Changes to shipping values and tax not calculating correctly.
