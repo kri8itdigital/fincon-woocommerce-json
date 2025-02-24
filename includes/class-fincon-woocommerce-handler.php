@@ -15,6 +15,8 @@ class WC_Fincon{
 	var $_DATA_PW 	= '';
 	var $_DATA 		= '';
 
+	var $_ALTERNATE = 0;
+
 	var $_ACC 		= '';
 	var $_SHIP 		= '';
 	var $_S_LOC 	= '';
@@ -83,6 +85,8 @@ class WC_Fincon{
 		$this->_PROD_ACTION = get_option('fincon_woocommerce_product_action');
 		$this->_DECIMAL		= wc_get_price_decimals();
 		$this->_DETAILED  	= get_option('fincon_woocommerce_product_detailed');
+
+		$this->_ALTERNATE 	= apply_filters('fincon_woocommerce_alternate_extention');
 
 		if(get_option('fincon_woocommerce_product_title') == 'yes'):
 			$this->_TITLES = true;
