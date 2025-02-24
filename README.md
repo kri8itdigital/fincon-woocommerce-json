@@ -17,4 +17,7 @@ function use_fincon_alternate(){
 
 }
 ```
+
+This code needs to be placed in the functions.php file of your active theme.
+
 **It has been done in such a way that current iterations are safe and that it cannot be enabled by accident.**
