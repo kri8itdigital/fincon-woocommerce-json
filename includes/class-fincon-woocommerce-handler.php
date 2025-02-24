@@ -15,7 +15,7 @@ class WC_Fincon{
 	var $_DATA_PW 	= '';
 	var $_DATA 		= '';
 
-	var $_ALTERNATE = 0;
+	var $_HANDLE_ALT = 0;
 
 	var $_ACC 		= '';
 	var $_SHIP 		= '';
@@ -86,7 +86,7 @@ class WC_Fincon{
 		$this->_DECIMAL		= wc_get_price_decimals();
 		$this->_DETAILED  	= get_option('fincon_woocommerce_product_detailed');
 
-		$this->_ALTERNATE 	= apply_filters('fincon_woocommerce_alternate_extention');
+		$this->_HANDLE_ALT 	= apply_filters('fincon_woocommerce_alternate_extention', $this->_HANDLE_ALT);
 
 		if(get_option('fincon_woocommerce_product_title') == 'yes'):
 			$this->_TITLES = true;
@@ -229,7 +229,7 @@ class WC_Fincon{
 		if(!$this->_ID):
 
 			$_ENDPOINT = 'Login';
-			$_DATA = array($this->_DATA, $this->_DATA_UN, $this->_DATA_PW, 0);
+			$_DATA = array($this->_DATA, $this->_DATA_UN, $this->_DATA_PW, $this->_HANDLE_ALT);
 
 			$_RESPONSE = $this->invoke_fincon($_ENDPOINT, $_DATA);
 

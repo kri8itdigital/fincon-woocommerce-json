@@ -10,10 +10,12 @@ Developed and Maintained by [Kri8it](https://kri8it.com/).
 ### As of version 2.6
 Filter has been added to use Fincon's Alternate Extension. 
 ```
-apply_filters('fincon_woocommerce_alternate_extention', 'use_fincon_alternate', 999);
-function use_fincon_alternate(){
+add_filter('fincon_woocommerce_alternate_extention', 'use_fincon_alternate', 999, 1);
+function use_fincon_alternate($_USE_ALTERNATE){
 
-	return 1;
+	$_USE_ALTERNATE = 1;
+
+	return $_USE_ALTERNATE;
 
 }
 ```
