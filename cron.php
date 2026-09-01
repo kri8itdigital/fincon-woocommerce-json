@@ -3,9 +3,13 @@
 
 /* THIS FILE IS PURELY FOR EXTERNAL CRONTAB MANAGEMENT */
 
-include "../../../wp-blog-header.php";
+include "../../../wp-load.php";
+
+echo "DEPRECATED - Kindly hit your wp-cron file";
+file_get_contents("../../../wp-cron.php");
 
 
+/*
 if(isset($_GET['type']) && $_GET['type'] != ''):
 
 	switch($_GET['type']):
@@ -54,12 +58,11 @@ if(isset($_GET['type']) && $_GET['type'] != ''):
 			break;
 	endswitch;
 
-else:
-
 
 	
 
 endif; 
 
+*/
 
 ?>

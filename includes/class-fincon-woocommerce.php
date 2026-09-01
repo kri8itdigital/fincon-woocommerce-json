@@ -79,7 +79,7 @@ class Fincon_Woocommerce {
 		if ( defined( 'FINCON_WOOCOMMERCE_VERSION' ) ) {
 			$this->version = FINCON_WOOCOMMERCE_VERSION;
 		} else {
-			$this->version = '2.6';
+			$this->version = '3.0';
 		}
 		$this->plugin_name = 'fincon-woocommerce';
 
@@ -177,7 +177,7 @@ class Fincon_Woocommerce {
 
 		$plugin_i18n = new Fincon_Woocommerce_i18n();
 
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
+		$this->loader->add_action( 'init', $plugin_i18n, 'load_plugin_textdomain' );
 
 	}
 
@@ -231,7 +231,9 @@ class Fincon_Woocommerce {
 
 			$this->loader->add_action( 'fincon_woocommerce_check_status', $plugin_admin, 'check_api');
 			$this->loader->add_action( 'fincon_woocommerce_sync_products', $plugin_admin, 'sync_stock_items');
+			$this->loader->add_action( 'fincon_woocommerce_check_product_sync', $plugin_admin, 'sync_stock_check');
 			$this->loader->add_action( 'fincon_woocommerce_sync_accounts', $plugin_admin, 'sync_user_items');
+			$this->loader->add_action( 'fincon_woocommerce_check_account_sync', $plugin_admin, 'sync_user_check');
 			$this->loader->add_action( 'fincon_woocommerce_clean_logs', $plugin_admin, 'clean_logs');
 
 			if(get_option('fincon_woocommerce_sync_orders') == 'yes'):

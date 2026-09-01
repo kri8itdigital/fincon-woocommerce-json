@@ -1,3 +1,8 @@
+= 3.0 - July 02, 2026 = 
+* Feature: Reworked syncing to have a 5 minute checker to ensure removal of potential stale syncs.
+* Change: Maximum sync amount for both products and users has been set to 250.
+* Deprecated: External Cron links will now only call the localised wp-cron.php file to prevent timeouts on larger systems.
+
 = 2.6 - February 11, 2025 = 
 * Fix: Work around for hosting where finfo is not available - move to base64 pattern recognition.
 * Feature: Added filter for switching to alternate extension

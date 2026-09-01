@@ -213,6 +213,11 @@ class Fincon_Woocommerce_Admin {
         	'display'  => esc_html__( 'Every Five Seconds' ), 
     	);
 
+	    $schedules['fifteenminutes'] = array(
+        	'interval' => 900,
+        	'display'  => esc_html__( 'Every Fifteen Minutes' ), 
+    	);
+
 
 
 		return $schedules;
@@ -235,14 +240,11 @@ class Fincon_Woocommerce_Admin {
 	 */
 	public function setup_cron_schedules(){
 
+		$_INTERVAL = get_option('fincon_woocommerce_interval');
 
 		if (! wp_next_scheduled( 'fincon_woocommerce_check_status')):
 
-
-			$_INTERVAL = get_option('fincon_woocommerce_interval');
-
 			wp_schedule_event(time(), $_INTERVAL, 'fincon_woocommerce_check_status');
-
 
 		endif;
 
@@ -259,11 +261,15 @@ class Fincon_Woocommerce_Admin {
 
 			if (! wp_next_scheduled( 'fincon_woocommerce_sync_products')):
 
-
-				$_INTERVAL = get_option('fincon_woocommerce_interval');
-
 				wp_schedule_event(time(), $_INTERVAL, 'fincon_woocommerce_sync_products');
 
+
+			endif;
+
+
+			if (! wp_next_scheduled( 'fincon_woocommerce_check_product_sync')):
+
+				wp_schedule_event(time(), 'fifteenminutes', 'fincon_woocommerce_check_product_sync');
 
 			endif;
 
@@ -275,6 +281,12 @@ class Fincon_Woocommerce_Admin {
 				
 			endif;
 
+			if (wp_next_scheduled( 'fincon_woocommerce_check_product_sync')):
+
+				wp_clear_scheduled_hook('fincon_woocommerce_check_product_sync');
+				
+			endif;
+
 		endif;
 			
 
@@ -283,11 +295,15 @@ class Fincon_Woocommerce_Admin {
 
 			if (! wp_next_scheduled( 'fincon_woocommerce_sync_accounts')):
 
-
-				$_INTERVAL = get_option('fincon_woocommerce_interval');
-
 				wp_schedule_event(time(), $_INTERVAL, 'fincon_woocommerce_sync_accounts');
 
+
+			endif;
+
+
+			if (! wp_next_scheduled( 'fincon_woocommerce_check_account_sync')):
+
+				wp_schedule_event(time(), 'fifteenminutes', 'fincon_woocommerce_check_account_sync');
 
 			endif;
 
@@ -298,6 +314,13 @@ class Fincon_Woocommerce_Admin {
 				wp_clear_scheduled_hook('fincon_woocommerce_sync_accounts');
 				
 			endif;
+
+			if (wp_next_scheduled( 'fincon_woocommerce_check_account_sync')):
+
+				wp_clear_scheduled_hook('fincon_woocommerce_check_account_sync');
+				
+			endif;
+
 
 		endif;
 
@@ -906,6 +929,10 @@ class Fincon_Woocommerce_Admin {
 
     		<h2>External Crons</h2>
     		<div class="fincon-admin-status-item">
+    			<span>External Crons have been deprecated - kindly hit your wp-cron.php file if necessary.</span>
+    		</div>
+    		<!--
+    		<div class="fincon-admin-status-item">
     			<span>Sync Connection: </span><br/><strong><?php echo $_CRON_URL; ?>?type=connection</strong>
     		</div>
     		<div class="fincon-admin-status-item">
@@ -920,7 +947,7 @@ class Fincon_Woocommerce_Admin {
     		<div class="fincon-admin-status-item">
     			<span>Run All: </span><br/><strong> <?php echo $_CRON_URL; ?>?type=all</strong>
     		</div>
-
+			-->
 
     	</div>
 
@@ -1000,16 +1027,325 @@ class Fincon_Woocommerce_Admin {
 			$_FINCON = new WC_Fincon();	
 			$_FINCON->run_product_sync($ISCRON);	
 
+		endif;	
+
+	}
+
+
+
+
+
+
+
+
+
+	
+	/**
+	 * Function to manage import and update of stock.
+	 *
+	 * @since    1.0.0
+	 */
+	public static function sync_stock_check(){
+
+		if(get_option('fincon_woocommerce_sync_stock') == 'yes'):
+
+			$_INTERVAL = get_option('fincon_woocommerce_interval');
+
+			$_PROD_RUN			= get_option('fincon_woocommerce_product_sync_running');
+			$_PROD_REC_NO 		= get_option('fincon_woocommerce_product_sync_rec_no');
+			$_PROD_SYNC_DATE 	= get_option('fincon_woocommerce_product_sync_last_date');
+			$_PROD_SYNC_TIME 	= get_option('fincon_woocommerce_product_sync_last_time');
+			$_PROD_SYNC_RSD 	= get_option('fincon_woocommerce_product_sync_running_start_date');
+			$_PROD_SYNC_RST 	= get_option('fincon_woocommerce_product_sync_running_start_time');
+			$_PROD_SYNC_ASD 	= get_option('fincon_woocommerce_product_sync_running_action_date');
+			$_PROD_SYNC_AST 	= get_option('fincon_woocommerce_product_sync_running_action_time');	
+
+			$_TYPE_OF_CLEAR 	= false;
+
+			$_PROD_DATE_CHECK = false;
+
+			if($_PROD_RUN == 'yes'):
+
+				if($_PROD_SYNC_ASD && $_PROD_SYNC_AST):
+
+					$_PROD_DATE_CHECK 	= new DateTime($_PROD_SYNC_ASD.' '.$_PROD_SYNC_AST);
+
+					$_TYPE_OF_CLEAR = "ACTION";
+
+				elseif($_PROD_SYNC_RSD && $_PROD_SYNC_RST):
+
+					$_PROD_DATE_CHECK 	= new DateTime($_PROD_SYNC_RSD.' '.$_PROD_SYNC_RST);
+
+					$_TYPE_OF_CLEAR = "RUNNING";
+
+				elseif($_PROD_SYNC_DATE && $_PROD_SYNC_TIME):
+
+					$_PROD_DATE_CHECK 	= new DateTime($_PROD_SYNC_DATE.' '.$_PROD_SYNC_TIME);
+
+					$_TYPE_OF_CLEAR = "FULL";
+
+				endif;
+
+
+			else:
+
+				if($_PROD_SYNC_ASD && $_PROD_SYNC_AST):
+
+					$_PROD_DATE_CHECK 	= new DateTime($_PROD_SYNC_ASD.' '.$_PROD_SYNC_AST);
+
+					$_TYPE_OF_CLEAR = "ACTION";
+
+				endif;
+
+			endif;
+
+			if($_PROD_DATE_CHECK):
+
+				$_DO_CLEAR = false;
+
+				$_PROD_DATE_NOW 	= new DateTime(wp_date('Y-m-d H:i:s'));
+
+				$_PROD_DIFF	= $_PROD_DATE_CHECK->diff($_PROD_DATE_NOW);
+
+				switch($_INTERVAL):
+
+					case "hourly":
+
+						if(((int)$_PROD_DIFF->i > 0 && (int)$_PROD_DIFF->h > 1) || (int)$_PROD_DIFF->d > 0):
+							$_DO_CLEAR = true;
+						endif;
+
+					break;
+					
+					case "twohours":
+
+						if(((int)$_PROD_DIFF->i > 0 && (int)$_PROD_DIFF->h > 2) || (int)$_PROD_DIFF->d > 0):
+							$_DO_CLEAR = true;
+						endif;
+
+					break;
+					
+					case "daily":
+
+						if((int)$_PROD_DIFF->d > 0):
+							$_DO_CLEAR = true;
+						endif;
+
+					break;
+					
+					case "twicedaily":
+
+						if(((int)$_PROD_DIFF->i > 0 && (int)$_PROD_DIFF->h > 12) || (int)$_PROD_DIFF->d > 0):
+							$_DO_CLEAR = true;
+						endif;
+
+					break;
+
+				endswitch;
+
+				if($_DO_CLEAR):
+
+					switch($_TYPE_OF_CLEAR):
+
+						case "ACTION":
+
+							update_option('fincon_woocommerce_product_sync_running', 'no');
+							delete_option('fincon_woocommerce_product_sync_running_action_date');
+							delete_option('fincon_woocommerce_product_sync_running_action_time');
+
+						break;
+
+						case "RUNNING":
+
+							$_ONE_DAYS_AGO = date('Y-m-d',strtotime('-1 day', strtotime('now')));
+
+							update_option('fincon_woocommerce_product_sync_running', 'no');
+							update_option('fincon_woocommerce_product_sync_last_date', $_ONE_DAYS_AGO);
+							update_option('fincon_woocommerce_product_sync_last_time', '00:00');
+							delete_option('fincon_woocommerce_product_sync_rec_no');
+							delete_option('fincon_woocommerce_product_sync_running_start_date');
+							delete_option('fincon_woocommerce_product_sync_running_start_time');
+							delete_option('fincon_woocommerce_product_sync_running_action_date');
+							delete_option('fincon_woocommerce_product_sync_running_action_time');
+
+						break;
+
+						case "FULL":
+
+							update_option('fincon_woocommerce_product_sync_running', 'no');
+							delete_option('fincon_woocommerce_product_sync_running_action_date');
+							delete_option('fincon_woocommerce_product_sync_running_action_time');
+							delete_option('fincon_woocommerce_product_sync_running_start_date');
+							delete_option('fincon_woocommerce_product_sync_running_start_time');
+
+						break;
+
+					endswitch;
+
+				endif;
+
+			endif;
+
 		endif;
 
+	}
 
 
 
-		/*
-		if(get_option('fincon_woocommerce_enable_product_email') == 'yes' && $_COUNT > 0):
-					self::do_email_notification('products', $_FINCON->_ERRORS);
+
+
+
+
+
+
+	
+	/**
+	 * Function to manage import and update of stock.
+	 *
+	 * @since    1.0.0
+	 */
+	public static function sync_user_check(){
+
+		if(get_option('fincon_woocommerce_sync_users') == 'yes'):
+
+			$_INTERVAL = get_option('fincon_woocommerce_interval');
+
+			$_USER_RUN			= get_option('fincon_woocommerce_user_sync_running');
+			$_USER_REC_NO 		= get_option('fincon_woocommerce_user_sync_rec_no');
+			$_USER_SYNC_DATE 	= get_option('fincon_woocommerce_user_sync_last_date');
+			$_USER_SYNC_TIME 	= get_option('fincon_woocommerce_user_sync_last_time');
+			$_USER_SYNC_RSD 	= get_option('fincon_woocommerce_user_sync_running_start_date');
+			$_USER_SYNC_RST 	= get_option('fincon_woocommerce_user_sync_running_start_time');
+			$_USER_SYNC_ASD 	= get_option('fincon_woocommerce_user_sync_running_action_date');
+			$_USER_SYNC_AST 	= get_option('fincon_woocommerce_user_sync_running_action_time');	
+
+			$_TYPE_OF_CLEAR 	= false;
+
+			$_USER_DATE_CHECK = false;
+
+			if($_USER_RUN == 'yes'):
+
+				if($_USER_SYNC_ASD && $_USER_SYNC_AST):
+
+					$_USER_DATE_CHECK 	= new DateTime($_USER_SYNC_ASD.' '.$_USER_SYNC_AST);
+
+					$_TYPE_OF_CLEAR 	= 'ACTION';
+
+				elseif($_USER_SYNC_RSD && $_USER_SYNC_RST):
+
+					$_USER_DATE_CHECK 	= new DateTime($_USER_SYNC_RSD.' '.$_USER_SYNC_RST);
+
+					$_TYPE_OF_CLEAR 	= 'RUNNING';
+
+				elseif($_USER_SYNC_DATE && $_USER_SYNC_TIME):
+
+					$_USER_DATE_CHECK 	= new DateTime($_USER_SYNC_DATE.' '.$_USER_SYNC_TIME);
+
+					$_TYPE_OF_CLEAR 	= 'FULL';
+
 				endif;
-		 */		
+
+
+			else:
+
+				if($_USER_SYNC_ASD && $_USER_SYNC_AST):
+
+					$_USER_DATE_CHECK 	= new DateTime($_USER_SYNC_ASD.' '.$_USER_SYNC_AST);
+
+					$_TYPE_OF_CLEAR 	= 'ACTION';
+
+				endif;
+
+			endif;
+
+			if($_USER_DATE_CHECK):
+
+				$_DO_CLEAR = false;
+
+				$_USER_DATE_NOW 	= new DateTime(wp_date('Y-m-d H:i:s'));
+
+				$_USER_DIFF	= $_USER_DATE_CHECK->diff($_USER_DATE_NOW);
+
+				switch($_INTERVAL):
+
+					case "hourly":
+
+						if(((int)$_USER_DIFF->i > 0 && (int)$_USER_DIFF->h > 1) || (int)$_USER_DIFF->d > 0):
+							$_DO_CLEAR = true;
+						endif;
+
+					break;
+					
+					case "twohours":
+
+						if(((int)$_USER_DIFF->i > 0 && (int)$_USER_DIFF->h > 2) || (int)$_USER_DIFF->d > 0):
+							$_DO_CLEAR = true;
+						endif;
+
+					break;
+					
+					case "daily":
+
+						if((int)$_USER_DIFF->d > 0):
+							$_DO_CLEAR = true;
+						endif;
+
+					break;
+					
+					case "twicedaily":
+
+						if(((int)$_USER_DIFF->i > 0 && (int)$_USER_DIFF->h > 12) || (int)$_USER_DIFF->d > 0):
+							$_DO_CLEAR = true;
+						endif;
+
+					break;
+
+				endswitch;
+
+				if($_DO_CLEAR):
+
+					switch($_TYPE_OF_CLEAR):
+
+						case "ACTION":
+
+							update_option('fincon_woocommerce_user_sync_running', 'no');
+							delete_option('fincon_woocommerce_user_sync_running_action_date');
+							delete_option('fincon_woocommerce_user_sync_running_action_time');
+
+						break;
+
+						case "RUNNING":
+
+							$_ONE_DAYS_AGO = date('Y-m-d',strtotime('-1 day', strtotime('now')));
+
+							update_option('fincon_woocommerce_user_sync_running', 'no');
+							update_option('fincon_woocommerce_user_sync_last_date', $_ONE_DAYS_AGO);
+							update_option('fincon_woocommerce_user_sync_last_time', '00:00');
+							delete_option('fincon_woocommerce_user_sync_rec_no');
+							delete_option('fincon_woocommerce_user_sync_running_start_date');
+							delete_option('fincon_woocommerce_user_sync_running_start_time');
+							delete_option('fincon_woocommerce_user_sync_running_action_date');
+							delete_option('fincon_woocommerce_user_sync_running_action_time');
+
+						break;
+
+						case "FULL":
+
+							update_option('fincon_woocommerce_user_sync_running', 'no');
+							delete_option('fincon_woocommerce_user_sync_running_action_date');
+							delete_option('fincon_woocommerce_user_sync_running_action_time');
+							delete_option('fincon_woocommerce_user_sync_running_start_date');
+							delete_option('fincon_woocommerce_user_sync_running_start_time');
+
+						break;
+
+					endswitch;
+
+				endif;
+
+			endif;
+
+		endif;
 
 	}
 
@@ -1073,9 +1409,17 @@ class Fincon_Woocommerce_Admin {
 
 		if(!get_option('fincon_woocommerce_product_sync_running') || get_option('fincon_woocommerce_product_sync_running') == 'no'):
 
+			delete_option('fincon_woocommerce_product_sync_running');
 			delete_option('fincon_woocommerce_product_sync_last_date');
 			delete_option('fincon_woocommerce_product_sync_last_time');
+			delete_option('fincon_woocommerce_product_sync_running_action_date');
+			delete_option('fincon_woocommerce_product_sync_running_action_time');
+			delete_option('fincon_woocommerce_product_sync_running_start_date');
+			delete_option('fincon_woocommerce_product_sync_running_start_time');
 			delete_option('fincon_woocommerce_product_sync_rec_no');
+			$_UPDATE_COUNT = 0;
+
+			update_option('fincon_woocommerce_product_sync_count', $_UPDATE_COUNT);
 
 			wp_schedule_single_event(time(), 'fincon_woocommerce_sync_products');
 
@@ -1133,9 +1477,17 @@ class Fincon_Woocommerce_Admin {
 
 		if(!get_option('fincon_woocommerce_user_sync_running') || get_option('fincon_woocommerce_user_sync_running') == 'no'):
 
+			delete_option('fincon_woocommerce_user_sync_running');
 			delete_option('fincon_woocommerce_user_sync_last_date');
 			delete_option('fincon_woocommerce_user_sync_last_time');
+			delete_option('fincon_woocommerce_user_sync_running_action_date');
+			delete_option('fincon_woocommerce_user_sync_running_action_time');
+			delete_option('fincon_woocommerce_user_sync_running_start_date');
+			delete_option('fincon_woocommerce_user_sync_running_start_time');
 			delete_option('fincon_woocommerce_user_sync_rec_no');
+			$_UPDATE_COUNT = 0;
+
+			update_option('fincon_woocommerce_user_sync_count', $_UPDATE_COUNT);
 
 			wp_schedule_single_event(time(), 'fincon_woocommerce_sync_accounts');
 
